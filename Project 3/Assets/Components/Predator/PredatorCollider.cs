@@ -7,7 +7,7 @@ using UnityEngine;
 /// Author: LAB
 /// Attached to: Chaser objects
 /// </summary>
-public class ChaserCollider : CustomBoxCollider
+public class PredatorCollider : CustomBoxCollider
 {
 
 	

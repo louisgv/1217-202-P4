@@ -2,7 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Chaser : Vehicle
+/// <summary>
+/// Predator system.
+/// Spawning predator as well as managing their number
+/// </summary>
+public class PredatorSystem : MonoBehaviour
 {
 
 	// Use this for initialization
@@ -16,13 +20,4 @@ public class Chaser : Vehicle
 	{
 		
 	}
-}
-
-/// <summary>
-/// Steering mode enum.
-/// </summary>
-public enum ChaserSteeringMode
-{
-	SEEKING,
-	PURSUING
 }

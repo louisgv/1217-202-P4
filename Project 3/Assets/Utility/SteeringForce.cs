@@ -21,7 +21,7 @@ public static class SteeringForce
 	{
 		var diff = vehicle.transform.position - target;
 
-		var desiredVelocity = diff.normalized * vehicle.maxFleeingVelocity;
+		var desiredVelocity = diff.normalized * vehicle.MaxFleeingVelocity;
 
 		var fleeingForce = desiredVelocity - vehicle.Velocity;
 
@@ -37,7 +37,7 @@ public static class SteeringForce
 	{
 		var diff = target - vehicle.transform.position;
 
-		var desiredVelocity = diff.normalized * vehicle.maxSeekingVelocity;
+		var desiredVelocity = diff.normalized * vehicle.MaxSeekingVelocity;
 
 		var seekingForce = desiredVelocity - vehicle.Velocity;
 

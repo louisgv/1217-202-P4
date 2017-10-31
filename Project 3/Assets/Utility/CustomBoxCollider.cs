@@ -100,7 +100,7 @@ public class CustomBoxCollider : MonoBehaviour
 	/// </summary>
 	private void OnDrawGizmos ()
 	{
-		Gizmos.color = Color.green;
+		Gizmos.color = Color.black;
 
 		if (target != null && IsColliding (target)) {
 			Gizmos.color = Color.red;
