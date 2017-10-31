@@ -83,7 +83,7 @@ public class CustomBoxCollider : MonoBehaviour
 	/// <returns>The minimum bound.</returns>
 	internal Vector3 GetMinBound ()
 	{
-		return WorldCenter - size / 2f;
+		return WorldCenter - GetHalfSize ();
 	}
 
 	/// <summary>
@@ -92,7 +92,16 @@ public class CustomBoxCollider : MonoBehaviour
 	/// <returns>The max bound.</returns>
 	internal Vector3 GetMaxBound ()
 	{
-		return WorldCenter + size / 2f;
+		return WorldCenter + GetHalfSize ();
+	}
+
+	/// <summary>
+	/// Gets the half size of the collider.
+	/// </summary>
+	/// <returns>The half size.</returns>
+	public Vector3 GetHalfSize ()
+	{
+		return size / 2f;
 	}
 
 	/// <summary>

@@ -12,6 +12,9 @@ public abstract class Vehicle : MonoBehaviour
 	[SerializeField]
 	private float mass = 1.0f;
 
+	[SerializeField, Range (0, 10f)]
+	protected float maxForce = 5.0f;
+
 	private Vector3 acceleration;
 
 	private Vector3 direction;
@@ -20,8 +23,6 @@ public abstract class Vehicle : MonoBehaviour
 	protected Transform fleeingTarget;
 	protected Transform evasionTarget;
 
-	[SerializeField, Range (0, 10f)]
-	protected float maxForce = 5.0f;
 	/// <summary>
 	/// The max fleeing velocity.
 	/// </summary>
@@ -195,6 +196,16 @@ public abstract class Vehicle : MonoBehaviour
 	}
 
 	/// <summary>
+	/// Faces the moving direction.
+	/// </summary>
+	protected void RotateTowardMovingDirection ()
+	{
+		var rotationAngle = Mathf.Atan2 (-direction.z, direction.x) * Mathf.Rad2Deg;
+
+		transform.rotation = Quaternion.Euler (0, rotationAngle, 0);
+	}
+
+	/// <summary>
 	/// Reset variable that has small rate of change, e.g acceleration
 	/// </summary>
 	protected void Reset ()
@@ -208,6 +219,8 @@ public abstract class Vehicle : MonoBehaviour
 		ApplyForce (GetSteeringForce ());
 		
 		Move ();
+
+		RotateTowardMovingDirection ();
 
 		Reset ();
 	}

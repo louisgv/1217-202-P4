@@ -2,6 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Pouch terrain, used to generate a terrain that looks like a pouch.
+/// At the moment, using the function x^8.
+/// Author: LAB
+/// Attached to: Pouch Terrain
+/// </summary>
 public class PouchTerrain : MonoBehaviour
 {
 
@@ -40,6 +46,13 @@ public class PouchTerrain : MonoBehaviour
 
 	}
 
+	/// <summary>
+	/// Calculates the height of the pouch terrain.
+	/// </summary>
+	/// <returns>The height.</returns>
+	/// <param name="x">The x coordinate.</param>
+	/// <param name="y">The y coordinate.</param>
+	/// <param name="res">Res.</param>
 	private float CalculateHeight (int x, int y, int res)
 	{
 		float xCoord = ScaleRamp (x, res);
@@ -54,6 +67,12 @@ public class PouchTerrain : MonoBehaviour
 		Mathf.Pow (truncatedXCoord, 8);
 	}
 
+	/// <summary>
+	/// Scales the ramp.
+	/// </summary>
+	/// <returns>The ramp.</returns>
+	/// <param name="i">The index.</param>
+	/// <param name="res">Res.</param>
 	private float ScaleRamp (int i, int res)
 	{
 		return (float)i / res;

@@ -37,6 +37,16 @@ public abstract class SpawningSystem : MonoBehaviour
 	}
 
 	/// <summary>
+	/// Gets the prey instances.
+	/// </summary>
+	/// <value>The prey instances.</value>
+	public List<Vehicle> PreyInstances {
+		get {
+			return preyInstances;
+		}
+	}
+
+	/// <summary>
 	/// Gets the prey collider instances.
 	/// </summary>
 	/// <value>The prey collider instances.</value>

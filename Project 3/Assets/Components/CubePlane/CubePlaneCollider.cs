@@ -14,13 +14,23 @@ public class CubePlaneCollider : CustomBoxCollider
 	/// <returns>The random position above.</returns>
 	public Vector3 GetRandomPositionAbove ()
 	{
-		var randomX = Random.Range (-0.5f, 0.5f) * Size.x;
+		var randomX = Random.Range (-0.45f, 0.45f) * Size.x;
 
-		var randomZ = Random.Range (-0.5f, 0.5f) * Size.z;
+		var randomZ = Random.Range (-0.45f, 0.45f) * Size.z;
 
-		var y = Size.y;
+		var y = Size.y / 2;
 
 		return WorldCenter + new Vector3 (randomX, y, randomZ);
+	}
+
+	/// <summary>
+	/// Gets a random position above the plane collider.
+	/// </summary>
+	/// <returns>The random position above.</returns>
+	/// <param name="col">Col.</param>
+	public Vector3 GetRandomPositionAbove (CustomBoxCollider col)
+	{
+		return GetRandomPositionAbove () + col.GetHalfSize ().y * Vector3.up;
 	}
 
 	/// <summary>

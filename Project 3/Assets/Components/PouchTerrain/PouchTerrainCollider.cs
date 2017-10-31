@@ -2,14 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Pouch terrain collider.
+/// Author: LAB
+/// Attached to PouchTerrain
+/// </summary>
 public class PouchTerrainCollider : CustomBoxCollider
 {
-	/// <summary>
-	/// Check for vehicle object dropped into the terrain
-	/// And stop their downard velocity as well as stop gravity from applying to them
-	/// </summary>
-	private void Update ()
-	{
-		
-	}
+	
 }

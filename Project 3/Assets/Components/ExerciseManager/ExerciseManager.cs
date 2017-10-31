@@ -18,24 +18,32 @@ public class ExerciseManager : SpawningSystem
 
 	#region implemented abstract members of SpawningSystem
 
+	/// <summary>
+	/// Spawns the entities.
+	/// </summary>
 	protected override void SpawnEntities ()
 	{
-		var teleporterPos = plane.GetRandomPositionAbove ();
+		var teleporterPos = plane.GetRandomPositionAbove (teleporterPrefab);
 		var teleporterInstance = Instantiate (teleporterPrefab, teleporterPos, Quaternion.identity, transform);
 
 		teleporterInstance.SpawningSystem = this;
 		teleporterInstance.Plane = plane;
 
-		var predatorPos = plane.GetRandomPositionAbove ();
-		var predatorInstance = Instantiate (predatorPrefab, predatorPos, Quaternion.identity, transform);
+		var predatorPos = plane.GetRandomPositionAbove (predatorPrefab.GetComponent <CustomBoxCollider> ());
+		var predatorInstance = Instantiate (predatorPrefab, predatorPos, Quaternion.identity, transform) as Zombie;
+
+		predatorInstance.SpawningSystem = this;
+
+		var preyPrefabCollider = preyPrefab.GetComponent <CustomBoxCollider> ();
 
 		for (int i = 0; i < preyCount; i++) {
-			var preyPos = plane.GetRandomPositionAbove ();
+			var preyPos = plane.GetRandomPositionAbove (preyPrefabCollider);
 			var preyInstance = Instantiate (preyPrefab, preyPos, Quaternion.identity, transform);
 
 			preyInstance.FleeingTarget = predatorInstance.transform;
 			preyInstance.SeekingTarget = teleporterInstance.transform;
 
+			preyInstances.Add (preyInstance);
 			preyColliderInstances.Add (preyInstance.GetComponent <PreyCollider> ());
 		}
 	}

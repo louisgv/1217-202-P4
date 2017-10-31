@@ -46,7 +46,7 @@ public class TeleporterCollider : CustomBoxCollider
 	/// </summary>
 	private void Teleport ()
 	{
-		var teleportingPosition = plane.GetRandomPositionAbove ();
+		var teleportingPosition = plane.GetRandomPositionAbove (this);
 
 		transform.position = teleportingPosition;
 	}
