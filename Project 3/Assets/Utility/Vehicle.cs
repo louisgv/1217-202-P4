@@ -12,6 +12,10 @@ public class Vehicle : MonoBehaviour
 	[SerializeField]
 	private float mass;
 
+	public float gravityAcceleration = 0.98f;
+
+	public bool grounded;
+
 	private Vector3 acceleration;
 
 	private Vector3 direction;
@@ -28,6 +32,8 @@ public class Vehicle : MonoBehaviour
 	[SerializeField]
 	internal float maxWanderingVelocity;
 
+	internal CustomBoxCollider boxCollider;
+
 	public Vector3 Direction {
 		get {
 			return direction;
@@ -40,6 +46,15 @@ public class Vehicle : MonoBehaviour
 		get {
 			return velocity;
 		}
+	}
+
+	/// <summary>
+	/// Applies ann add-on acceleration.
+	/// </summary>
+	/// <param name="addonAcceleration">Addon acceleration.</param>
+	internal void ApplyAcceleration (Vector3 addonAcceleration)
+	{
+		acceleration += addonAcceleration;
 	}
 
 	/// <summary>
@@ -66,6 +81,10 @@ public class Vehicle : MonoBehaviour
 	// Update is called once per frame
 	internal void LateUpdate ()
 	{
+		if (grounded) {
+			ApplyAcceleration (Vector3.down * gravityAcceleration);
+		}
+		
 		Move ();
 	}
 }

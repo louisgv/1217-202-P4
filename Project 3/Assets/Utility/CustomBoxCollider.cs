@@ -49,8 +49,7 @@ public class CustomBoxCollider : MonoBehaviour
 		var ourMaxBound = GetMaxBound ();
 		var otherMaxBound = other.GetMaxBound ();
 
-		return
-			GreaterComponentCompare (otherMaxBound, ourMinBound) &&
+		return GreaterComponentCompare (otherMaxBound, ourMinBound) &&
 		GreaterComponentCompare (ourMaxBound, otherMinBound);
 	}
 
