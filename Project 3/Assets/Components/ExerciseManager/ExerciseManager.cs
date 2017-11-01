@@ -16,11 +16,6 @@ public class ExerciseManager : SpawningSystem
 	[SerializeField]
 	private CubePlaneCollider plane;
 
-	private void Update ()
-	{
-		
-	}
-
 	#region implemented abstract members of SpawningSystem
 
 	/// <summary>
