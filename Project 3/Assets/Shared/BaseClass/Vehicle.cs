@@ -19,10 +19,6 @@ public abstract class Vehicle : MonoBehaviour
 
 	private Vector3 direction;
 
-	protected Transform seekingTarget;
-	protected Transform fleeingTarget;
-	protected Transform evasionTarget;
-
 	/// <summary>
 	/// The max fleeing velocity.
 	/// </summary>
@@ -100,45 +96,6 @@ public abstract class Vehicle : MonoBehaviour
 	protected float wanderingForceScale = 2.0f;
 
 	/// <summary>
-	/// Gets or sets the seeking target.
-	/// </summary>
-	/// <value>The seeking target.</value>
-	public Transform SeekingTarget {
-		get {
-			return seekingTarget;
-		}
-		set {
-			seekingTarget = value;
-		}
-	}
-
-	/// <summary>
-	/// Gets or sets the fleeing target.
-	/// </summary>
-	/// <value>The fleeing target.</value>
-	public Transform FleeingTarget {
-		get {
-			return fleeingTarget;
-		}
-		set {
-			fleeingTarget = value;
-		}
-	}
-
-	/// <summary>
-	/// Gets or sets the evasion target.
-	/// </summary>
-	/// <value>The evasion target.</value>
-	public Transform EvasionTarget {
-		get {
-			return evasionTarget;
-		}
-		set {
-			evasionTarget = value;
-		}
-	}
-
-	/// <summary>
 	/// Gets the direction.
 	/// </summary>
 	/// <value>The direction.</value>
@@ -158,6 +115,11 @@ public abstract class Vehicle : MonoBehaviour
 		get {
 			return velocity;
 		}
+	}
+
+	protected virtual void Start ()
+	{
+		
 	}
 
 	/// <summary>

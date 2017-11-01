@@ -16,6 +16,11 @@ public class ExerciseManager : SpawningSystem
 	[SerializeField]
 	private CubePlaneCollider plane;
 
+	private void Update ()
+	{
+		
+	}
+
 	#region implemented abstract members of SpawningSystem
 
 	/// <summary>
@@ -38,7 +43,7 @@ public class ExerciseManager : SpawningSystem
 
 		for (int i = 0; i < preyCount; i++) {
 			var preyPos = plane.GetRandomPositionAbove (preyPrefabCollider);
-			var preyInstance = Instantiate (preyPrefab, preyPos, Quaternion.identity, transform);
+			var preyInstance = Instantiate (preyPrefab, preyPos, Quaternion.identity, transform) as Human;
 
 			preyInstance.FleeingTarget = predatorInstance.transform;
 			preyInstance.SeekingTarget = teleporterInstance.transform;

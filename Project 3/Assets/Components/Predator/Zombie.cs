@@ -15,6 +15,8 @@ public class Zombie : Vehicle
 
 	private SpawningSystem spawningSystem;
 
+	private Transform seekingTarget;
+
 	/// <summary>
 	/// Gets or sets the spawning system.
 	/// </summary>
@@ -54,6 +56,14 @@ public class Zombie : Vehicle
 			}
 		}
 		return target;
+	}
+
+	/// <summary>
+	/// Start this instance.
+	/// </summary>
+	protected override void Start ()
+	{
+		base.Start ();
 	}
 
 	#region implemented abstract members of Vehicle

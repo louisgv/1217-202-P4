@@ -9,7 +9,6 @@ using UnityEngine;
 /// </summary>
 public class Human : Vehicle
 {
-
 	public Material glLineMaterial;
 
 	private float fleeThresholdSquared = 36.0f;
@@ -18,6 +17,13 @@ public class Human : Vehicle
 	private Color seekingLineColor = Color.green;
 	private Color fleeingLineColor = Color.white;
 
+	private Transform seekingTarget;
+	private Transform fleeingTarget;
+
+	protected override void Start ()
+	{
+		base.Start ();
+	}
 
 	#region implemented abstract members of Vehicle
 
@@ -53,6 +59,32 @@ public class Human : Vehicle
 		float distanceSquared = Vector3.Dot (diffVector, diffVector);
 
 		return distanceSquared < fleeThresholdSquared;
+	}
+
+	/// <summary>
+	/// Gets or sets the seeking target.
+	/// </summary>
+	/// <value>The seeking target.</value>
+	public Transform SeekingTarget {
+		get {
+			return seekingTarget;
+		}
+		set {
+			seekingTarget = value;
+		}
+	}
+
+	/// <summary>
+	/// Gets or sets the fleeing target.
+	/// </summary>
+	/// <value>The fleeing target.</value>
+	public Transform FleeingTarget {
+		get {
+			return fleeingTarget;
+		}
+		set {
+			fleeingTarget = value;
+		}
 	}
 
 	/// <summary>
