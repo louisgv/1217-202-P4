@@ -13,6 +13,8 @@ public class ExerciseManager : SpawningSystem
 
 	public int preyCount = 9;
 
+	public int predatorCount = 9;
+
 	[SerializeField]
 	private CubePlaneCollider plane;
 
@@ -29,10 +31,12 @@ public class ExerciseManager : SpawningSystem
 		teleporterInstance.SpawningSystem = this;
 		teleporterInstance.Plane = plane;
 
-		var predatorPos = plane.GetRandomPositionAbove (predatorPrefab.GetComponent <CustomBoxCollider> ());
-		var predatorInstance = Instantiate (predatorPrefab, predatorPos, Quaternion.identity, transform) as Zombie;
-
-		predatorInstance.SpawningSystem = this;
+		for (int i = 0; i < predatorCount; i++) {
+			var predatorPos = plane.GetRandomPositionAbove (predatorPrefab.GetComponent <CustomBoxCollider> ());
+			var predatorInstance = Instantiate (predatorPrefab, predatorPos, Quaternion.identity, transform) as Zombie;
+			
+			predatorInstance.SpawningSystem = this;
+		}
 
 		var preyPrefabCollider = preyPrefab.GetComponent <CustomBoxCollider> ();
 
@@ -40,7 +44,7 @@ public class ExerciseManager : SpawningSystem
 			var preyPos = plane.GetRandomPositionAbove (preyPrefabCollider);
 			var preyInstance = Instantiate (preyPrefab, preyPos, Quaternion.identity, transform) as Human;
 
-			preyInstance.FleeingTarget = predatorInstance.transform;
+//			preyInstance.FleeingTarget = predatorInstance.transform;
 			preyInstance.SeekingTarget = teleporterInstance.transform;
 
 			preyInstances.Add (preyInstance);

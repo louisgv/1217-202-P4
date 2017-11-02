@@ -54,6 +54,9 @@ public class Human : Vehicle
 	/// <returns><c>true</c>, if flee was shoulded, <c>false</c> otherwise.</returns>
 	private bool ShouldFlee ()
 	{
+		if (fleeingTarget == null) {
+			return false;
+		}
 		var diffVector = fleeingTarget.position - transform.position;
 
 		float distanceSquared = Vector3.Dot (diffVector, diffVector);
@@ -102,28 +105,28 @@ public class Human : Vehicle
 		GL.Vertex (transform.position);
 		GL.Vertex (seekingTarget.position);
 		GL.End ();
+		Debug.DrawLine (transform.position, seekingTarget.position, seekingLineColor);
 
 		var transformFlatPos = transform.position;
 		transformFlatPos.y = 0;
 
-		var fleeingTargetFlatPos = fleeingTarget.position;
-		fleeingTargetFlatPos.y = 0;
-
-		if (ShouldFlee ()) {
-			// Draw line to fleeing target
-			GL.Begin (GL.LINES);
-			GL.Color (fleeingLineColor);
-			GL.Vertex (transformFlatPos);
-			GL.Vertex (fleeingTargetFlatPos);
-			GL.End ();
+		if (fleeingTarget != null) {
+			var fleeingTargetFlatPos = fleeingTarget.position;
+			fleeingTargetFlatPos.y = 0;
+			
+			if (ShouldFlee ()) {
+				// Draw line to fleeing target
+				GL.Begin (GL.LINES);
+				GL.Color (fleeingLineColor);
+				GL.Vertex (transformFlatPos);
+				GL.Vertex (fleeingTargetFlatPos);
+				GL.End ();
+			}
+			
+			Debug.DrawLine (transformFlatPos, fleeingTargetFlatPos, fleeingLineColor);
 		}
 
-
 		GL.PopMatrix ();
-
-		Debug.DrawLine (transform.position, seekingTarget.position, seekingLineColor);
-
-		Debug.DrawLine (transformFlatPos, fleeingTargetFlatPos, fleeingLineColor);
 	}
 
 }
