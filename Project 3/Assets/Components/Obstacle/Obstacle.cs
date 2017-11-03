@@ -2,15 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Obstacle : MonoBehaviour {
+/// <summary>
+/// Obstacle.
+/// Does nothing at the moment
+/// Attached to: Obstacle
+/// Author: LAB
+/// </summary>
+public class Obstacle : MonoBehaviour
+{
 
-	// Use this for initialization
-	void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
 }

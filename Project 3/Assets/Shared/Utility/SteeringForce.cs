@@ -9,7 +9,7 @@ public enum SteeringMode
 {
 	SEEKING,
 	FLEEING,
-	EVASION,
+	EVADING,
 	WANDERING
 }
 
@@ -26,7 +26,7 @@ public static class SteeringForce
 	internal static SteeringFx[] steeringFunctions = {
 		GetSeekingForce,
 		GetFleeingForce,
-		GetEvasionForce,
+		GetEvadingForce,
 		GetWanderingForce
 	};
 
@@ -44,6 +44,19 @@ public static class SteeringForce
 	}
 
 	/// <summary>
+	/// Gets the steering force based on desired velocity.
+	/// </summary>
+	/// <returns>The steering force.</returns>
+	/// <param name="desiredVelocity">Desired velocity.</param>
+	internal static Vector3 GetSteeringForce (Vehicle vehicle, Vector3 desiredVelocity)
+	{
+		var steeringForce = desiredVelocity - vehicle.Velocity;
+
+		return steeringForce;
+	}
+
+
+	/// <summary>
 	/// Gets the fleeing force.
 	/// </summary>
 	/// <returns>The fleeing force.</returns>
@@ -52,11 +65,9 @@ public static class SteeringForce
 	{
 		var diff = vehicle.transform.position - target;
 
-		var desiredVelocity = diff.normalized * vehicle.MaxFleeingVelocity;
+		var desiredVelocity = diff.normalized * vehicle.fleeingParams.MaxSpeed;
 
-		var fleeingForce = desiredVelocity - vehicle.Velocity;
-
-		return fleeingForce;
+		return GetSteeringForce (vehicle, desiredVelocity) * vehicle.fleeingParams.ForceScale;
 	}
 
 	/// <summary>
@@ -68,11 +79,9 @@ public static class SteeringForce
 	{
 		var diff = target - vehicle.transform.position;
 
-		var desiredVelocity = diff.normalized * vehicle.MaxSeekingVelocity;
+		var desiredVelocity = diff.normalized * vehicle.seekingParams.MaxSpeed;
 
-		var seekingForce = desiredVelocity - vehicle.Velocity;
-
-		return seekingForce;
+		return GetSteeringForce (vehicle, desiredVelocity) * vehicle.seekingParams.ForceScale;
 	}
 
 	/// <summary>
@@ -80,7 +89,7 @@ public static class SteeringForce
 	/// </summary>
 	/// <returns>The evasion force.</returns>
 	/// <param name="target">Target.</param>
-	internal static Vector3 GetEvasionForce (Vehicle vehicle, Vector3 target)
+	internal static Vector3 GetEvadingForce (Vehicle vehicle, Vector3 target)
 	{
 
 		return Vector3.zero;

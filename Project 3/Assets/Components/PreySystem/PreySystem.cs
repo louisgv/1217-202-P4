@@ -26,6 +26,8 @@ public class PreySystem : SpawningSystem <Prey>
 
 		preyInstance.TargetPredatorSystem = targetPredatorSystem;
 
+		preyInstance.BoundingPlane = plane;
+
 		RegisterVehicle (preyInstance);
 	}
 

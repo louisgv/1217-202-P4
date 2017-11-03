@@ -8,11 +8,8 @@ using UnityEngine;
 /// If of close proximity to a predator: Run away
 /// Attached to: Prey, Human
 /// </summary>
-public class Prey : Vehicle
+public class Prey : BoundedVehicle
 {
-	[SerializeField]
-	private float fleeThresholdSquared = 36.0f;
-
 	public Material glLineMaterial;
 
 	private Color fleeingLineColor = Color.green;
@@ -36,13 +33,16 @@ public class Prey : Vehicle
 
 	#region implemented abstract members of Vehicle
 
-	protected override Vector3 GetSteeringForce ()
+	protected override Vector3 GetTotalSteeringForce ()
 	{
-		fleeingTarget = targetPredatorSystem.FindNearestInstance (transform.position, fleeThresholdSquared);
+		// Get fleeing force:
+		fleeingTarget = targetPredatorSystem.FindNearestInstance (transform.position, fleeingParams.ThresholdSquared);
 
 		var fleeingForce = SteeringForce.GetSteeringForce (this, fleeingTarget, SteeringMode.FLEEING);
 
-		var totalForce = fleeingForce;
+		var bouncingForce = GetBoundingForce ();
+
+		var totalForce = fleeingForce + bouncingForce;
 
 		totalForce.y = 0;
 
@@ -55,7 +55,7 @@ public class Prey : Vehicle
 	/// <summary>
 	/// Draw debug line to current target
 	/// </summary>
-	private void OnRenderObject () // Examples of drawing lines – yours might be more complex!
+	private void OnRenderObject ()
 	{
 		if (fleeingTarget == null) {
 			return;

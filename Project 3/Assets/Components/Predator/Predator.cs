@@ -7,7 +7,7 @@ using UnityEngine;
 /// Default: Seeking and pursuing the closest Prey
 /// Attached to: Predator, Zombie
 /// </summary>
-public class Predator : Vehicle
+public class Predator : BoundedVehicle
 {
 	public Material glLineMaterial;
 
@@ -32,7 +32,7 @@ public class Predator : Vehicle
 
 	#region implemented abstract members of Vehicle
 
-	protected override Vector3 GetSteeringForce ()
+	protected override Vector3 GetTotalSteeringForce ()
 	{
 		seekingTarget = targetPreySystem.FindNearestInstance (transform.position);
 
@@ -51,7 +51,7 @@ public class Predator : Vehicle
 	/// <summary>
 	/// Draw debug line to current target
 	/// </summary>
-	private void OnRenderObject () // Examples of drawing lines – yours might be more complex!
+	private void OnRenderObject ()
 	{
 		if (seekingTarget == null) {
 			return;

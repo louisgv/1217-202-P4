@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 /// <summary>
 /// Vehicle base class.
@@ -19,81 +20,17 @@ public abstract class Vehicle : MonoBehaviour
 
 	private Vector3 direction;
 
-	/// <summary>
-	/// The max fleeing velocity.
-	/// </summary>
-	[SerializeField, Range (0, 10f)]
-	protected float maxFleeingVelocity = 1;
+	[SerializeField]
+	public SteeringParams fleeingParams;
 
-	/// <summary>
-	/// Gets the max fleeing velocity.
-	/// </summary>
-	/// <value>The max fleeing velocity.</value>
-	public float MaxFleeingVelocity {
-		get {
-			return maxFleeingVelocity;
-		}
-	}
+	[SerializeField]
+	public SteeringParams seekingParams;
 
-	[SerializeField, Range (0, 10f)]
-	protected float fleeingForceScale = 2.0f;
+	[SerializeField]
+	public SteeringParams evasionParams;
 
-	/// <summary>
-	/// The max seeking velocity.
-	/// </summary>
-	[SerializeField, Range (0, 10f)]
-	protected float maxSeekingVelocity = 1;
-
-	/// <summary>
-	/// Gets the max seeking velocity.
-	/// </summary>
-	/// <value>The max seeking velocity.</value>
-	public float MaxSeekingVelocity {
-		get {
-			return maxSeekingVelocity;
-		}
-	}
-
-	[SerializeField, Range (0, 10f)]
-	protected float seekingForceScale = 2.0f;
-
-	/// <summary>
-	/// The max evasion velocity.
-	/// </summary>
-	[SerializeField, Range (0, 10f)]
-	protected float maxEvasionVelocity = 1;
-
-	/// <summary>
-	/// Gets the max evasion velocity.
-	/// </summary>
-	/// <value>The max evasion velocity.</value>
-	public float MaxEvasionVelocity {
-		get {
-			return maxEvasionVelocity;
-		}
-	}
-
-	[SerializeField, Range (0, 10f)]
-	protected float evasionForceScale = 2.0f;
-
-	/// <summary>
-	/// The max wandering velocity.
-	/// </summary>
-	[SerializeField, Range (0, 10f)]
-	protected float maxWanderingVelocity = 1;
-
-	/// <summary>
-	/// Gets the max wandering velocity.
-	/// </summary>
-	/// <value>The max wandering velocity.</value>
-	public float MaxWanderingVelocity {
-		get {
-			return maxWanderingVelocity;
-		}
-	}
-
-	[SerializeField, Range (0, 10f)]
-	protected float wanderingForceScale = 2.0f;
+	[SerializeField]
+	public SteeringParams wanderingParams;
 
 	/// <summary>
 	/// Gets the direction.
@@ -125,7 +62,7 @@ public abstract class Vehicle : MonoBehaviour
 	/// <summary>
 	/// Gets the steering force.
 	/// </summary>
-	protected abstract Vector3 GetSteeringForce ();
+	protected abstract Vector3 GetTotalSteeringForce ();
 
 	/// <summary>
 	/// Applies ann add-on acceleration.
@@ -176,9 +113,9 @@ public abstract class Vehicle : MonoBehaviour
 	}
 
 	// Update is called once per frame
-	protected void LateUpdate ()
+	protected virtual void LateUpdate ()
 	{
-		ApplyForce (GetSteeringForce ());
+		ApplyForce (GetTotalSteeringForce ());
 		
 		Move ();
 

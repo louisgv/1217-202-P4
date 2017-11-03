@@ -5,6 +5,7 @@ using UnityEngine;
 /// <summary>
 /// Predator system.
 /// Spawns predator and attach the pree-defined targetPreySystem
+/// Author: LAB
 /// Attached to: PredatorSystem
 /// </summary>
 public class PredatorSystem : SpawningSystem <Predator>
@@ -25,6 +26,8 @@ public class PredatorSystem : SpawningSystem <Predator>
 		var predatorInstance = Instantiate (prefab, predatorPos, Quaternion.identity, transform);
 
 		predatorInstance.TargetPreySystem = targetPreySystem;
+
+		predatorInstance.BoundingPlane = plane;
 
 		RegisterVehicle (predatorInstance);
 	}
