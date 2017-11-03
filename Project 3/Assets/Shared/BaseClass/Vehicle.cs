@@ -16,6 +16,22 @@ public abstract class Vehicle : MonoBehaviour
 	[SerializeField, Range (0, 10f)]
 	protected float maxForce = 5.0f;
 
+	/// <summary>
+	/// The max fleeing velocity.
+	/// </summary>
+	[SerializeField, Range (0, 10f)]
+	protected float maxSteeringSpeed = 1;
+
+	/// <summary>
+	/// Gets the max speed.
+	/// </summary>
+	/// <value>The max speed.</value>
+	public float MaxSteeringSpeed {
+		get {
+			return maxSteeringSpeed;
+		}
+	}
+
 	private Vector3 acceleration;
 
 	private Vector3 direction;
@@ -27,7 +43,7 @@ public abstract class Vehicle : MonoBehaviour
 	public SteeringParams seekingParams;
 
 	[SerializeField]
-	public SteeringParams evasionParams;
+	public SteeringParams evadingParams;
 
 	[SerializeField]
 	public SteeringParams wanderingParams;

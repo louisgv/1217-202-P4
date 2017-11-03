@@ -8,13 +8,13 @@ using UnityEngine;
 /// If of close proximity to a predator: Run away
 /// Attached to: Prey, Human
 /// </summary>
-public class Prey : BoundedVehicle
+public class Prey : SmartBoundedVehicle<PreyCollider>
 {
 	public Material glLineMaterial;
 
 	private Color fleeingLineColor = Color.green;
 
-	private Transform fleeingTarget;
+	private List<Transform> fleeingTargets;
 
 	private PredatorSystem targetPredatorSystem;
 
@@ -35,14 +35,21 @@ public class Prey : BoundedVehicle
 
 	protected override Vector3 GetTotalSteeringForce ()
 	{
+		var totalForce = Vector3.zero;
+
 		// Get fleeing force:
-		fleeingTarget = targetPredatorSystem.FindNearestInstance (transform.position, fleeingParams.ThresholdSquared);
+		fleeingTargets = targetPredatorSystem.FindCloseProximityInstances (transform.position, fleeingParams.ThresholdSquared);
 
-		var fleeingForce = SteeringForce.GetSteeringForce (this, fleeingTarget, SteeringMode.FLEEING);
+		foreach (var fleeingTarget in fleeingTargets) {
+			var fleeingForce = SteeringForce.GetSteeringForce (this, fleeingTarget, SteeringMode.FLEEING);
+			totalForce += fleeingForce;
+		}
 
-		var bouncingForce = GetBoundingForce ();
+		totalForce *= fleeingParams.ForceScale;
 
-		var totalForce = fleeingForce + bouncingForce;
+		totalForce += GetObstacleEvadingForce () * evadingParams.ForceScale;
+
+		totalForce += GetBoundingForce () * boundingParams.ForceScale;
 
 		totalForce.y = 0;
 
@@ -57,7 +64,7 @@ public class Prey : BoundedVehicle
 	/// </summary>
 	private void OnRenderObject ()
 	{
-		if (fleeingTarget == null) {
+		if (fleeingTargets == null) {
 			return;
 		}
 
@@ -65,15 +72,16 @@ public class Prey : BoundedVehicle
 
 		GL.PushMatrix ();
 
-		// Draw line to seeking target
-		GL.Begin (GL.LINES);
-		GL.Color (fleeingLineColor);
-		GL.Vertex (transform.position);
-		GL.Vertex (fleeingTarget.position);
-		GL.End ();
-
+		foreach (var fleeingTarget in fleeingTargets) {
+			GL.Begin (GL.LINES);
+			GL.Color (fleeingLineColor);
+			GL.Vertex (transform.position);
+			GL.Vertex (fleeingTarget.position);
+			GL.End ();
+			Debug.DrawLine (transform.position, fleeingTarget.position, fleeingLineColor);
+		}
+			
 		GL.PopMatrix ();
 
-		Debug.DrawLine (transform.position, fleeingTarget.position, fleeingLineColor);
 	}
 }

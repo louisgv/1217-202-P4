@@ -9,5 +9,5 @@ using UnityEngine;
 /// </summary>
 public class PreyCollider : CustomBoxCollider
 {
-
+	
 }

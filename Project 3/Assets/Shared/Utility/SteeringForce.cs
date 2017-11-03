@@ -65,9 +65,9 @@ public static class SteeringForce
 	{
 		var diff = vehicle.transform.position - target;
 
-		var desiredVelocity = diff.normalized * vehicle.fleeingParams.MaxSpeed;
+		var desiredVelocity = diff.normalized * vehicle.MaxSteeringSpeed;
 
-		return GetSteeringForce (vehicle, desiredVelocity) * vehicle.fleeingParams.ForceScale;
+		return GetSteeringForce (vehicle, desiredVelocity);
 	}
 
 	/// <summary>
@@ -79,9 +79,9 @@ public static class SteeringForce
 	{
 		var diff = target - vehicle.transform.position;
 
-		var desiredVelocity = diff.normalized * vehicle.seekingParams.MaxSpeed;
+		var desiredVelocity = diff.normalized * vehicle.MaxSteeringSpeed;
 
-		return GetSteeringForce (vehicle, desiredVelocity) * vehicle.seekingParams.ForceScale;
+		return GetSteeringForce (vehicle, desiredVelocity);
 	}
 
 	/// <summary>
@@ -91,8 +91,25 @@ public static class SteeringForce
 	/// <param name="target">Target.</param>
 	internal static Vector3 GetEvadingForce (Vehicle vehicle, Vector3 target)
 	{
+		var diff = target - vehicle.transform.position;
 
-		return Vector3.zero;
+		var forwardProjection = Vector3.Dot (diff, vehicle.transform.forward);
+
+		if (forwardProjection < 0) {
+			return Vector3.zero;
+		}
+
+		var rightProjection = Vector3.Dot (diff, vehicle.transform.right);
+
+		var desiredDirection = (rightProjection > 0) 
+		                       // Object to the right right, turn left
+			? -vehicle.transform.right
+		                       // Object to the left, turn right
+			: vehicle.transform.right;
+
+		var desiredVelocity = desiredDirection * vehicle.MaxSteeringSpeed;
+
+		return GetSteeringForce (vehicle, desiredVelocity);
 	}
 
 	/// <summary>

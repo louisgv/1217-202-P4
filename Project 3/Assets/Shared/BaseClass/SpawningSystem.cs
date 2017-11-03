@@ -23,9 +23,19 @@ public abstract class SpawningSystem <T>: MonoBehaviour where T : Component
 	protected CubePlaneCollider plane;
 
 	/// <summary>
-	/// Spawns the entities.
+	/// Spawns an entity.
 	/// </summary>
 	protected abstract void SpawnEntity (int i);
+
+	/// <summary>
+	/// Spawns the entities.
+	/// </summary>
+	protected virtual void SpawnEntities ()
+	{
+		for (int i = 0; i < spawnCount; i++) {
+			SpawnEntity (i);
+		}
+	}
 
 	/// <summary>
 	/// Add the specified instance.
@@ -44,9 +54,33 @@ public abstract class SpawningSystem <T>: MonoBehaviour where T : Component
 
 		prefabCollider = prefab.GetComponent <CustomBoxCollider> ();
 
-		for (int i = 0; i < spawnCount; i++) {
-			SpawnEntity (i);
+		SpawnEntities ();
+	}
+
+	/// <summary>
+	/// Finds the a list of Transform surrounding a certain position.
+	/// </summary>
+	/// <returns>The nearest instance.</returns>
+	/// <param name="pos">Position.</param>
+	public List<Transform> FindCloseProximityInstances (Vector3 pos, float minDistanceSquared)
+	{
+		if (instances == null || instances.Count == 0) {
+			return null;
 		}
+
+		var targets = new List<Transform> ();
+
+		foreach (var prey in instances) {
+			var diffVector = prey.transform.position - pos;
+
+			float distanceSquared = Vector3.Dot (diffVector, diffVector);
+
+			if (minDistanceSquared > distanceSquared) {
+				targets.Add (prey.transform);
+			}
+		}
+
+		return targets;
 	}
 
 	/// <summary>

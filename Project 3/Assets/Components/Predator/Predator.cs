@@ -7,7 +7,7 @@ using UnityEngine;
 /// Default: Seeking and pursuing the closest Prey
 /// Attached to: Predator, Zombie
 /// </summary>
-public class Predator : BoundedVehicle
+public class Predator : SmartBoundedVehicle<PredatorCollider>
 {
 	public Material glLineMaterial;
 
@@ -38,7 +38,9 @@ public class Predator : BoundedVehicle
 
 		var seekingForce = SteeringForce.GetSteeringForce (this, seekingTarget, SteeringMode.SEEKING);
 
-		var totalForce = seekingForce;
+		var totalForce = seekingForce * seekingParams.ForceScale;
+
+		totalForce += GetObstacleEvadingForce () * evadingParams.ForceScale;
 
 		totalForce.y = 0;
 

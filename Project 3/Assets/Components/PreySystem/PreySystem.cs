@@ -12,6 +12,9 @@ public class PreySystem : SpawningSystem <Prey>
 	[SerializeField]
 	private PredatorSystem targetPredatorSystem;
 
+	[SerializeField]
+	private ObstacleSystem targetObstacleSystem;
+
 	#region implemented abstract members of SpawningSystem
 
 	/// <summary>
@@ -25,6 +28,8 @@ public class PreySystem : SpawningSystem <Prey>
 		var preyInstance = Instantiate (prefab, preyPos, Quaternion.identity, transform);
 
 		preyInstance.TargetPredatorSystem = targetPredatorSystem;
+
+		preyInstance.TargetObstacleSystem = targetObstacleSystem;
 
 		preyInstance.BoundingPlane = plane;
 

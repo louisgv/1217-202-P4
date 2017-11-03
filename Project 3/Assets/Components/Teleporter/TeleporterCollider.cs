@@ -58,7 +58,7 @@ public class TeleporterCollider : CustomBoxCollider
 	private void Update ()
 	{
 		foreach (var preyCollider in spawningSystem.ColliderInstances) {
-			if (IsColliding (preyCollider)) {
+			if (IsCollidingWith (preyCollider)) {
 				Teleport ();
 			}
 		}

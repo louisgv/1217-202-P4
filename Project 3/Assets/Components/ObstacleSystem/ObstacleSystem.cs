@@ -13,16 +13,36 @@ public class ObstacleSystem : SpawningSystem <Obstacle>
 	#region implemented abstract members of SpawningSystem
 
 	/// <summary>
-	/// Spawns the preys.
+	/// Empty abstract as it is not needed
 	/// </summary>
 	/// <param name="index">Index.</param>
 	protected override void SpawnEntity (int i)
 	{
-		var spawnPos = plane.GetRandomPositionAbove (prefabCollider);
+		// INTENTIONALLY LEFT BLANK	
+	}
 
-		var instance = Instantiate (prefab, spawnPos, Quaternion.identity, transform);
+	protected override void SpawnEntities ()
+	{
+		var minBound = plane.GetMinBound ();
 
-		RegisterVehicle (instance);
+		int xCount = spawnCount / 2;
+
+		int zCount = spawnCount - xCount;
+
+		float xStep = plane.Size.x / xCount;
+		float zStep = plane.Size.z / zCount;
+
+		var initialPos = new Vector3 (xStep, 0, zStep) / 2 + prefabCollider.GetHalfSize ().y * Vector3.up;
+
+		for (int x = 0; x < xCount; x++) {
+			for (int z = 0; z < zCount; z++) {
+				var spawnPos = minBound + new Vector3 (x * xStep, 0, z * zStep) + initialPos;
+				
+				var instance = Instantiate (prefab, spawnPos, Quaternion.identity, transform);
+				
+				RegisterVehicle (instance);
+			}
+		}
 	}
 
 	#endregion

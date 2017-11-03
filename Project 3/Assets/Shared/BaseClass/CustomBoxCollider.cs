@@ -6,16 +6,21 @@ using UnityEngine;
 /// Custom collider using renderer's mesh bound.
 /// It uttilizes AABB collision algorithm
 /// </summary>
-public class CustomBoxCollider : MonoBehaviour
+public abstract class CustomBoxCollider : MonoBehaviour
 {
 	[SerializeField]
-	private CustomBoxCollider target;
+	protected Vector3 center;
 
 	[SerializeField]
-	private Vector3 center;
+	protected Vector3 size;
 
-	[SerializeField]
-	private Vector3 size;
+	protected bool isColliding = false;
+
+	public bool IsColliding {
+		get {
+			return isColliding;
+		}
+	}
 
 	/// <summary>
 	/// Gets the center.
@@ -41,7 +46,7 @@ public class CustomBoxCollider : MonoBehaviour
 	/// Determines whether this instance is colliding using AABB algorithm.
 	/// </summary>
 	/// <returns><c>true</c> if this instance is colliding; otherwise, <c>false</c>.</returns>
-	public bool IsColliding (CustomBoxCollider other)
+	public bool IsCollidingWith (CustomBoxCollider other)
 	{
 		var ourMinBound = GetMinBound ();
 		var otherMinBound = other.GetMinBound ();
@@ -105,17 +110,24 @@ public class CustomBoxCollider : MonoBehaviour
 	}
 
 	/// <summary>
+	/// Awake this instance.
+	/// </summary>
+	protected virtual void Awake ()
+	{
+
+	}
+
+	/// <summary>
 	/// Raises the draw gizmos event.
 	/// </summary>
-	private void OnDrawGizmos ()
+	protected virtual void OnDrawGizmos ()
 	{
 		Gizmos.color = Color.black;
 
-		if (target != null && IsColliding (target)) {
+		if (isColliding) {
 			Gizmos.color = Color.red;
 		}
 
 		Gizmos.DrawWireCube (WorldCenter, size);
-
 	}
 }
