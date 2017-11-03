@@ -11,13 +11,13 @@ using UnityEngine;
 /// </summary>
 public class TeleporterCollider : CustomBoxCollider
 {
-	private SpawningSystem spawningSystem;
+	private SpawningSystem<Vehicle> spawningSystem;
 
 	/// <summary>
 	/// Gets or sets the spawning system.
 	/// </summary>
 	/// <value>The spawning system.</value>
-	public SpawningSystem SpawningSystem {
+	public SpawningSystem<Vehicle> SpawningSystem {
 		get {
 			return spawningSystem;
 		}
@@ -57,7 +57,7 @@ public class TeleporterCollider : CustomBoxCollider
 	/// </summary>
 	private void Update ()
 	{
-		foreach (var preyCollider in spawningSystem.PreyColliderInstances) {
+		foreach (var preyCollider in spawningSystem.ColliderInstances) {
 			if (IsColliding (preyCollider)) {
 				Teleport ();
 			}

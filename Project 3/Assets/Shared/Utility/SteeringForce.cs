@@ -3,6 +3,17 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
+/// Steering mode public enum.
+/// </summary>
+public enum SteeringMode
+{
+	SEEKING,
+	FLEEING,
+	EVASION,
+	WANDERING
+}
+
+/// <summary>
 /// Steering force static class.
 /// All force function assumed mass is 1 and force is applied every 1 second
 /// Author: LAB
@@ -10,7 +21,27 @@ using UnityEngine;
 /// </summary>
 public static class SteeringForce
 {
-	delegate Vector3 SteeringFx (Vector3 target);
+	internal delegate Vector3 SteeringFx (Vehicle vehicle, Vector3 target);
+
+	internal static SteeringFx[] steeringFunctions = {
+		GetSeekingForce,
+		GetFleeingForce,
+		GetEvasionForce,
+		GetWanderingForce
+	};
+
+	/// <summary>
+	/// Gets the steering force.
+	/// </summary>
+	/// <returns>The steering force.</returns>
+	/// <param name="steeringFx">Steering type.</param>
+	/// <param name="targetTransform">Target transform.</param>
+	internal static Vector3 GetSteeringForce (Vehicle vehicle, Transform targetTransform, SteeringMode sMode)
+	{
+		return targetTransform == null
+			? Vector3.zero
+			: steeringFunctions [(int)sMode] (vehicle, targetTransform.position);
+	}
 
 	/// <summary>
 	/// Gets the fleeing force.
@@ -73,15 +104,4 @@ public static class SteeringForce
 
 		return GetSeekingForce (vehicle, finalTarget);
 	}
-}
-
-/// <summary>
-/// Steering mode enum.
-/// </summary>
-public enum SteeringMode
-{
-	SEEKING,
-	FLEEING,
-	EVASION,
-	WANDERING
 }

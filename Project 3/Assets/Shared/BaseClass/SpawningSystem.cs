@@ -7,61 +7,96 @@ using UnityEngine;
 /// Author: LAB
 /// Attached to: N/A
 /// </summary>
-public abstract class SpawningSystem : MonoBehaviour
+public abstract class SpawningSystem <T>: MonoBehaviour where T : Component
 {
-	protected List<Vehicle> preyInstances;
-	protected List<Vehicle> predatorInstances;
+	public int spawnCount = 9;
 
-	protected List<CustomBoxCollider> preyColliderInstances;
-	protected List<CustomBoxCollider> predatorColliderInstances;
+	public T prefab;
 
-	public Vehicle predatorPrefab;
+	protected CustomBoxCollider prefabCollider;
 
-	public Vehicle preyPrefab;
+	protected List<T> instances;
+
+	protected List<CustomBoxCollider> colliderInstances;
+
+	[SerializeField]
+	protected CubePlaneCollider plane;
 
 	/// <summary>
 	/// Spawns the entities.
 	/// </summary>
-	protected abstract void SpawnEntities ();
+	protected abstract void SpawnEntity (int i);
+
+	/// <summary>
+	/// Add the specified instance.
+	/// </summary>
+	/// <param name="instance">Instance.</param>
+	protected void RegisterVehicle (T instance)
+	{
+		instances.Add (instance);
+		colliderInstances.Add (instance.GetComponent <CustomBoxCollider> ());
+	}
 
 	protected void Awake ()
 	{
-		preyInstances = new List<Vehicle> ();
-		predatorInstances = new List<Vehicle> ();
+		instances = new List<T> ();
+		colliderInstances = new List<CustomBoxCollider> ();
 
-		preyColliderInstances = new List<CustomBoxCollider> ();
-		predatorColliderInstances = new List<CustomBoxCollider> ();
+		prefabCollider = prefab.GetComponent <CustomBoxCollider> ();
 
-		SpawnEntities ();
+		for (int i = 0; i < spawnCount; i++) {
+			SpawnEntity (i);
+		}
 	}
 
 	/// <summary>
-	/// Gets the prey instances.
+	/// Finds the nearest instance to given pos.
+	/// </summary>
+	/// <returns>The nearest instance.</returns>
+	/// <param name="pos">Position.</param>
+	public Transform FindNearestInstance (Vector3 pos, float minDistanceSquared = float.MaxValue)
+	{
+		if (instances == null || instances.Count == 0) {
+			return null;
+		}
+
+		// Default to null
+		Transform target = null;
+
+		foreach (var prey in instances) {
+			var diffVector = prey.transform.position - pos;
+
+			float distanceSquared = Vector3.Dot (diffVector, diffVector);
+
+			if (minDistanceSquared > distanceSquared) {
+
+				minDistanceSquared = distanceSquared;
+
+				target = prey.transform;
+			}
+		}
+
+		return target;
+	}
+
+	/// <summary>
+	/// Gets the spawned instances.
 	/// </summary>
 	/// <value>The prey instances.</value>
-	public List<Vehicle> PreyInstances {
+	public List<T> Instances {
 		get {
-			return preyInstances;
+			return instances;
 		}
 	}
 
 	/// <summary>
-	/// Gets the prey collider instances.
+	/// Gets the spawned collider instances.
 	/// </summary>
 	/// <value>The prey collider instances.</value>
-	public List<CustomBoxCollider> PreyColliderInstances {
+	public List<CustomBoxCollider> ColliderInstances {
 		get {
-			return preyColliderInstances;
+			return colliderInstances;
 		}
 	}
 
-	/// <summary>
-	/// Gets the predator instances.
-	/// </summary>
-	/// <value>The predator instances.</value>
-	public List<Vehicle> PredatorInstances {
-		get {
-			return predatorInstances;
-		}
-	}
 }
