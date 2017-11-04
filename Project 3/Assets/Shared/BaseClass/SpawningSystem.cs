@@ -72,6 +72,7 @@ public abstract class SpawningSystem <T>: MonoBehaviour where T : Component
 			return null;
 		}
 
+		// TODO: Add a delegate parameter here so we can define and reuse the same for loop instead
 		var targets = new List<Transform> ();
 
 		foreach (var instance in instances) {

@@ -102,15 +102,15 @@ public static class SteeringForce
 	internal static Vector3 GetWanderingForce (Vehicle vehicle)
 	{
 		// Get a position slightly ahead of the vehicle's forward direction
-		var wanderCompass = vehicle.transform.position + vehicle.transform.forward * vehicle.wanderingParams.ThresholdSquared;
+		var wanderAnchor = vehicle.transform.position + vehicle.transform.forward * vehicle.wanderingParams.ThresholdSquared;
 
-		// Get a random position
-		var randomDirection = (Vector3)Random.insideUnitCircle;
+		// Get a random rotation position
+		var randomDirection = Random.insideUnitSphere;
 
 		// Reconstruct the target position
-		var finalTarget = wanderCompass + randomDirection;
+		var finalTarget = wanderAnchor + randomDirection;
 
-		Debug.DrawLine (vehicle.transform.position, finalTarget);
+		Debug.DrawLine (wanderAnchor, finalTarget, Color.black);
 
 		return GetSeekingForce (vehicle, finalTarget);
 	}
@@ -204,6 +204,7 @@ public static class SteeringForce
 		var sum = Vector3.zero;
 
 		foreach (var neighbor in nearbyNeighbors) {
+			// TODO: Add distance factor to each of these
 			sum += (vehicle.transform.position - neighbor.transform.position).normalized;
 		}
 

@@ -44,6 +44,16 @@ public abstract class CustomBoxCollider : MonoBehaviour
 	}
 
 	/// <summary>
+	/// Gets the extend squared.
+	/// </summary>
+	/// <value>The extend squared.</value>
+	public float ExtendSquared {
+		get {
+			return Vector3.Dot (size, size);
+		}
+	}
+
+	/// <summary>
 	/// Determines whether this instance is colliding using AABB algorithm.
 	/// </summary>
 	/// <returns><c>true</c> if this instance is colliding; otherwise, <c>false</c>.</returns>

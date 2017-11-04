@@ -72,7 +72,7 @@ abstract public class SmartBoundedVehicle <C, V>: BoundedVehicle where C : Custo
 	/// <returns>The total neighbor separation force.</returns>
 	protected Vector3 GetTotalNeighborSeparationForce ()
 	{
-		var nearbyNeighbors = parentSystem.FindCloseProximityInstances (transform.position, separationParams.ThresholdSquared);
+		var nearbyNeighbors = parentSystem.FindCloseProximityInstances (transform.position, colliderInstance.ExtendSquared);
 
 		return SteeringForce.GetNeighborSeparationForce (this, nearbyNeighbors);
 	}
