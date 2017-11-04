@@ -41,27 +41,20 @@ public abstract class SpawningSystem <T>: MonoBehaviour where T : Component
 		}
 	}
 
-	public Vector3 GetGridCoordinate (Vector3 pos)
-	{
-		return new Vector3 ();
-	}
-
 	/// <summary>
 	/// Add the specified instance.
 	/// </summary>
 	/// <param name="instance">Instance.</param>
 	protected void RegisterVehicle (T instance)
 	{
-		int x = Mathf.CeilToInt (instance.transform.position.x / 2.0f);
+		var gridKey = SpawningGridCoordinate<T>.GetGridKey ();
 
-		int y = Mathf.CeilToInt (instance.transform.position.y / 2.0f);
+		instanceMap [gridKey].Add (instance);
 
-//		instanceMap [x, y] = (instance);
-
-		colliderInstanceMap [x, y] (instance.GetComponent <CustomBoxCollider> ());
+		colliderInstanceMap [gridKey].Add (instance);
 	}
 
-	protected void Awake ()
+	protected virtual void Awake ()
 	{
 		instanceMap = new Dictionary<string, HashSet<T>> ();
 
@@ -71,6 +64,36 @@ public abstract class SpawningSystem <T>: MonoBehaviour where T : Component
 
 		SpawnEntities ();
 	}
+
+	/// <summary>
+	/// Refreshs the instance maps to reflect the new grid.
+	/// </summary>
+	protected void RefreshMap ()
+	{
+		/// Ho, if each vehicle has an instance of its own grid, then there's no problem
+		/// for each of them to call this parent SpawningSystem
+		/// To reassign itself to a different map!...
+		/// 
+		/// Hmmm...
+		/// Something like a method to move from map to map??
+		/// 
+		/// Every frame, the instace will get a new grid location,
+		/// 
+		/// and tell spawn system to remove itself from the set of the current grid
+		/// 
+		/// and then add it to a new grid
+		/// 
+		/// Now, the only problem is will the removed instance hash the correct hash...
+		/// 
+		/// Let's hope so..
+	}
+
+	protected virtual void Start ()
+	{
+		// TODO: refresh the map every now and then...
+
+	}
+
 
 	/// <summary>
 	/// Finds the a list of Transform surrounding a certain position.
@@ -83,10 +106,16 @@ public abstract class SpawningSystem <T>: MonoBehaviour where T : Component
 			return null;
 		}
 
+
+		// Grab the instance set coorespoinding to the current position...
+		var gridKey = SpawningGridCoordinate<T>.GetGridKey ();
+
+		var instanceSet = instanceMap [gridKey];
+
 		// TODO: Add a delegate parameter here so we can define and reuse the same for loop instead
 		var targets = new List<Transform> ();
 
-		foreach (var instance in instanceMap) {
+		foreach (var instance in instanceSet) {
 			var diffVector = instance.transform.position - pos;
 
 			float distanceSquared = Vector3.Dot (diffVector, diffVector);
@@ -110,10 +139,15 @@ public abstract class SpawningSystem <T>: MonoBehaviour where T : Component
 			return null;
 		}
 
+		// Grab the instance set coorespoinding to the current position...
+		var gridKey = SpawningGridCoordinate<T>.GetGridKey ();
+
+		var instanceSet = instanceMap [gridKey];
+
 		// Default to null
 		Transform target = null;
 
-		foreach (var prey in instanceMap) {
+		foreach (var prey in instanceSet) {
 			var diffVector = prey.transform.position - pos;
 
 			float distanceSquared = Vector3.Dot (diffVector, diffVector);
