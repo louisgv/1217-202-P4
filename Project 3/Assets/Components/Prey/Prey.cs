@@ -8,7 +8,7 @@ using UnityEngine;
 /// If of close proximity to a predator: Run away
 /// Attached to: Prey, Human
 /// </summary>
-public class Prey : SmartBoundedVehicle<PreyCollider>
+public class Prey : SmartBoundedVehicle<PreyCollider, Prey>
 {
 	public Material glLineMaterial;
 
@@ -33,21 +33,19 @@ public class Prey : SmartBoundedVehicle<PreyCollider>
 
 	#region implemented abstract members of Vehicle
 
+	/// <summary>
+	/// Gets the steering force.
+	/// </summary>
+	/// <returns>The total steering force.</returns>
 	protected override Vector3 GetTotalSteeringForce ()
 	{
 		var totalForce = Vector3.zero;
 
-		// Get fleeing force:
-		fleeingTargets = targetPredatorSystem.FindCloseProximityInstances (transform.position, fleeingParams.ThresholdSquared);
+		totalForce += GetTotalFleeingForce () * fleeingParams.ForceScale;
 
-		foreach (var fleeingTarget in fleeingTargets) {
-			var fleeingForce = SteeringForce.GetSteeringForce (this, fleeingTarget, SteeringMode.FLEEING);
-			totalForce += fleeingForce;
-		}
+		totalForce += GetTotalObstacleAvoidanceForce () * evadingParams.ForceScale;
 
-		totalForce *= fleeingParams.ForceScale;
-
-		totalForce += GetObstacleEvadingForce () * evadingParams.ForceScale;
+		totalForce += GetTotalNeighborSeparationForce () * separationParams.ForceScale;
 
 		totalForce += GetBoundingForce () * boundingParams.ForceScale;
 
@@ -58,6 +56,23 @@ public class Prey : SmartBoundedVehicle<PreyCollider>
 
 	#endregion
 
+	/// <summary>
+	/// Gets the total fleeing force.
+	/// </summary>
+	/// <returns>The total fleeing force.</returns>
+	protected Vector3 GetTotalFleeingForce ()
+	{
+		var totalForce = Vector3.zero;
+		// Get fleeing force:
+		fleeingTargets = targetPredatorSystem.FindCloseProximityInstances (transform.position, fleeingParams.ThresholdSquared);
+
+		foreach (var fleeingTarget in fleeingTargets) {
+			var fleeingForce = SteeringForce.GetSteeringForce (this, fleeingTarget, SteeringMode.FLEEING);
+			totalForce += fleeingForce;
+		}
+
+		return totalForce;
+	}
 
 	/// <summary>
 	/// Draw debug line to current target

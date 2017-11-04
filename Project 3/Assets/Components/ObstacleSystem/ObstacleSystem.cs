@@ -16,11 +16,14 @@ public class ObstacleSystem : SpawningSystem <Obstacle>
 	/// Empty abstract as it is not needed
 	/// </summary>
 	/// <param name="index">Index.</param>
-	protected override void SpawnEntity (int i)
+	protected override void SpawnEntity ()
 	{
 		// INTENTIONALLY LEFT BLANK	
 	}
 
+	/// <summary>
+	/// Spawns the obstacles.
+	/// </summary>
 	protected override void SpawnEntities ()
 	{
 		var minBound = plane.GetMinBound ();

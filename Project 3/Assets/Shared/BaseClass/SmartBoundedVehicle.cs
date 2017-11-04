@@ -7,14 +7,33 @@ using UnityEngine;
 /// It is a bounded vehicle that avoids obstacles
 /// Author: LAB
 /// </summary>
-[RequireComponent (typeof(T))]
-abstract public class SmartBoundedVehicle <T>: BoundedVehicle where T : CustomBoxCollider
+[RequireComponent (typeof(C))]
+abstract public class SmartBoundedVehicle <C, V>: BoundedVehicle where C : CustomBoxCollider where V: Vehicle
 {
 	protected ObstacleSystem targetObstacleSystem;
 
-	private float safeRadius;
+	protected C colliderInstance;
 
-	protected T colliderInstance;
+	protected SpawningSystem<V> parentSystem;
+
+	[SerializeField]
+	public SteeringParams separationParams;
+
+	[SerializeField]
+	public SteeringParams avoidingParams;
+
+	/// <summary>
+	/// Gets or sets the parent system.
+	/// </summary>
+	/// <value>The parent system.</value>
+	public SpawningSystem<V> ParentSystem {
+		get {
+			return parentSystem;
+		}
+		set {
+			parentSystem = value;
+		}
+	}
 
 	/// <summary>
 	/// Gets or sets the target obstacle system.
@@ -33,7 +52,7 @@ abstract public class SmartBoundedVehicle <T>: BoundedVehicle where T : CustomBo
 	/// Gets or sets the collider instance.
 	/// </summary>
 	/// <value>The collider instance.</value>
-	public T ColliderInstance {
+	public C ColliderInstance {
 		get {
 			return colliderInstance;
 		}
@@ -42,42 +61,32 @@ abstract public class SmartBoundedVehicle <T>: BoundedVehicle where T : CustomBo
 		}
 	}
 
-
-	private void Awake ()
+	protected override void Awake ()
 	{
-		colliderInstance = GetComponent <T> ();
-
-		var xzSize = colliderInstance.Size;
-
-		xzSize.y = 0;
-
-		safeRadius = xzSize.magnitude;
+		colliderInstance = GetComponent <C> ();
 	}
 
 	/// <summary>
-	/// Gets the obstacle evading force.
+	/// Gets the total neighbor separation force.
 	/// </summary>
-	/// <returns>The obstacle evading force.</returns>
-	protected Vector3 GetObstacleEvadingForce ()
+	/// <returns>The total neighbor separation force.</returns>
+	protected Vector3 GetTotalNeighborSeparationForce ()
 	{
-		var totalForce = Vector3.zero;
-		
-		var nearbyObstacles = targetObstacleSystem.FindCloseProximityInstances (transform.position, evadingParams.ThresholdSquared);
+		var nearbyNeighbors = parentSystem.FindCloseProximityInstances (transform.position, separationParams.ThresholdSquared);
 
-		foreach (var obstacle in nearbyObstacles) {
-			totalForce += SteeringForce.GetSteeringForce (this, obstacle, SteeringMode.EVADING);
-		}
-
-		return totalForce;
+		return SteeringForce.GetNeighborSeparationForce (this, nearbyNeighbors);
 	}
 
 	/// <summary>
-	/// Raises the draw gizmos event.
+	/// Gets the total obstacle avoidance force.
 	/// </summary>
-	private void OnDrawGizmos ()
+	/// <returns>The total obstacle avoidance force.</returns>
+	protected Vector3 GetTotalObstacleAvoidanceForce ()
 	{
-		Gizmos.color = Color.black;
+		var nearbyObstacles = targetObstacleSystem.FindCloseProximityInstances (transform.position, avoidingParams.ThresholdSquared);
 
-		Gizmos.DrawWireSphere (Vector3.Scale (new Vector3 (1, 0, 1), transform.position), safeRadius);
+		return SteeringForce.GetObstacleAvoidanceForce (this, nearbyObstacles);
 	}
+
+
 }

@@ -15,17 +15,19 @@ public abstract class SpawningSystem <T>: MonoBehaviour where T : Component
 
 	protected CustomBoxCollider prefabCollider;
 
-	protected List<T> instances;
+	protected HashSet<T> instances;
 
-	protected List<CustomBoxCollider> colliderInstances;
+	protected HashSet<CustomBoxCollider> colliderInstances;
 
 	[SerializeField]
 	protected CubePlaneCollider plane;
 
+
+
 	/// <summary>
 	/// Spawns an entity.
 	/// </summary>
-	protected abstract void SpawnEntity (int i);
+	protected abstract void SpawnEntity ();
 
 	/// <summary>
 	/// Spawns the entities.
@@ -33,7 +35,7 @@ public abstract class SpawningSystem <T>: MonoBehaviour where T : Component
 	protected virtual void SpawnEntities ()
 	{
 		for (int i = 0; i < spawnCount; i++) {
-			SpawnEntity (i);
+			SpawnEntity ();
 		}
 	}
 
@@ -44,13 +46,15 @@ public abstract class SpawningSystem <T>: MonoBehaviour where T : Component
 	protected void RegisterVehicle (T instance)
 	{
 		instances.Add (instance);
+
 		colliderInstances.Add (instance.GetComponent <CustomBoxCollider> ());
 	}
 
 	protected void Awake ()
 	{
-		instances = new List<T> ();
-		colliderInstances = new List<CustomBoxCollider> ();
+		instances = new HashSet<T> ();
+
+		colliderInstances = new HashSet<CustomBoxCollider> ();
 
 		prefabCollider = prefab.GetComponent <CustomBoxCollider> ();
 
@@ -117,7 +121,7 @@ public abstract class SpawningSystem <T>: MonoBehaviour where T : Component
 	/// Gets the spawned instances.
 	/// </summary>
 	/// <value>The prey instances.</value>
-	public List<T> Instances {
+	public HashSet<T> Instances {
 		get {
 			return instances;
 		}
@@ -127,7 +131,7 @@ public abstract class SpawningSystem <T>: MonoBehaviour where T : Component
 	/// Gets the spawned collider instances.
 	/// </summary>
 	/// <value>The prey collider instances.</value>
-	public List<CustomBoxCollider> ColliderInstances {
+	public HashSet<CustomBoxCollider> ColliderInstances {
 		get {
 			return colliderInstances;
 		}

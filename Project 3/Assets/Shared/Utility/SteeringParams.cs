@@ -3,6 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
+/// <summary>
+/// Steering parameters.
+/// Author: LAB
+/// Used to supply parameter for each steering behavior
+/// </summary>
 [SerializableAttribute]
 public class SteeringParams
 {

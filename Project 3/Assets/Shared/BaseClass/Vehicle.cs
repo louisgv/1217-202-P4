@@ -70,6 +70,11 @@ public abstract class Vehicle : MonoBehaviour
 		}
 	}
 
+	protected virtual void Awake ()
+	{
+
+	}
+
 	protected virtual void Start ()
 	{
 		

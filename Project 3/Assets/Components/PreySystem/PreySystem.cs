@@ -22,12 +22,13 @@ public class PreySystem : SpawningSystem <Prey>
 	/// Spawns the preys.
 	/// </summary>
 	/// <param name="index">Index.</param>
-	protected override void SpawnEntity (int i)
+	protected override void SpawnEntity ()
 	{
 		var preyPos = plane.GetRandomPositionAbove (prefabCollider);
 
 		var preyInstance = Instantiate (prefab, preyPos, Quaternion.identity, transform);
 
+		preyInstance.ParentSystem = this;
 		preyInstance.TargetPredatorSystem = targetPredatorSystem;
 		preyInstance.TargetObstacleSystem = targetObstacleSystem;
 

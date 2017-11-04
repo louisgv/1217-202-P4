@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Custom collider using renderer's mesh bound.
-/// It uttilizes AABB collision algorithm
+/// Custom box collider.
+/// It uttilizes AABB collision algorithm to check for collision
+/// It is also used to calculate the square extend of an obstacle
 /// </summary>
 public abstract class CustomBoxCollider : MonoBehaviour
 {

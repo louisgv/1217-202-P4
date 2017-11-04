@@ -7,7 +7,7 @@ using UnityEngine;
 /// Default: Seeking and pursuing the closest Prey
 /// Attached to: Predator, Zombie
 /// </summary>
-public class Predator : SmartBoundedVehicle<PredatorCollider>
+public class Predator : SmartBoundedVehicle<PredatorCollider, Predator>
 {
 	public Material glLineMaterial;
 
@@ -32,15 +32,29 @@ public class Predator : SmartBoundedVehicle<PredatorCollider>
 
 	#region implemented abstract members of Vehicle
 
+	/// <summary>
+	/// Gets the steering force.
+	/// </summary>
+	/// <returns>The total steering force.</returns>
 	protected override Vector3 GetTotalSteeringForce ()
 	{
 		seekingTarget = targetPreySystem.FindNearestInstance (transform.position);
 
 		var seekingForce = SteeringForce.GetSteeringForce (this, seekingTarget, SteeringMode.SEEKING);
 
+		// Check if seeking force is zero, if so add wandering behavior
+
+		var wanderingForce = seekingForce.Equals (Vector3.zero) 
+			? SteeringForce.GetWanderingForce (this)
+			: Vector3.zero;
+
 		var totalForce = seekingForce * seekingParams.ForceScale;
 
-		totalForce += GetObstacleEvadingForce () * evadingParams.ForceScale;
+		totalForce += GetTotalObstacleAvoidanceForce () * evadingParams.ForceScale;
+
+		totalForce += GetTotalNeighborSeparationForce () * separationParams.ForceScale;
+
+		totalForce += GetBoundingForce () * boundingParams.ForceScale;
 
 		totalForce.y = 0;
 
