@@ -41,6 +41,8 @@ public class Prey : SmartBoundedVehicle<PreyCollider, Prey>
 	{
 		var totalForce = Vector3.zero;
 
+		totalForce += SteeringForce.GetWanderingForce (this) * wanderingParams.ForceScale;
+
 		totalForce += GetTotalFleeingForce () * fleeingParams.ForceScale;
 
 		totalForce += GetTotalObstacleAvoidanceForce () * evadingParams.ForceScale;
@@ -79,24 +81,18 @@ public class Prey : SmartBoundedVehicle<PreyCollider, Prey>
 	/// </summary>
 	protected override void OnRenderObject ()
 	{
-		base.OnRenderObject ();
-		if (fleeingTargets == null) {
-			return;
-		}
-
 		glLineMaterial.SetPass (0);
 
 		GL.PushMatrix ();
 
-		foreach (var fleeingTarget in fleeingTargets) {
-			GL.Begin (GL.LINES);
-			GL.Color (fleeingLineColor);
-			GL.Vertex (transform.position);
-			GL.Vertex (fleeingTarget.position);
-			GL.End ();
-			Debug.DrawLine (transform.position, fleeingTarget.position, fleeingLineColor);
+		base.OnRenderObject ();
+
+		if (fleeingTargets != null) {
+			foreach (var fleeingTarget in fleeingTargets) {
+				DrawDebugLine (fleeingTarget.position, fleeingLineColor);
+			}
 		}
-			
+
 		GL.PopMatrix ();
 	}
 }

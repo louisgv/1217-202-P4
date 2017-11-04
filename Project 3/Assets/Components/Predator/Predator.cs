@@ -42,13 +42,14 @@ public class Predator : SmartBoundedVehicle<PredatorCollider, Predator>
 
 		var seekingForce = SteeringForce.GetSteeringForce (this, seekingTarget, SteeringMode.SEEKING);
 
-		// Check if seeking force is zero, if so add wandering behavior
+		var totalForce = seekingForce * seekingParams.ForceScale;
 
+		// Check if seeking force is zero, if so add wandering behavior
 		var wanderingForce = seekingForce.Equals (Vector3.zero) 
 			? SteeringForce.GetWanderingForce (this)
 			: Vector3.zero;
 
-		var totalForce = seekingForce * seekingParams.ForceScale;
+		totalForce += wanderingForce * wanderingParams.ForceScale;
 
 		totalForce += GetTotalObstacleAvoidanceForce () * evadingParams.ForceScale;
 
@@ -63,28 +64,21 @@ public class Predator : SmartBoundedVehicle<PredatorCollider, Predator>
 
 	#endregion
 
-
 	/// <summary>
 	/// Draw debug line to current target
 	/// </summary>
 	protected override void OnRenderObject ()
 	{
-		base.OnRenderObject ();
-		if (seekingTarget == null) {
-			return;
-		}
-		
 		glLineMaterial.SetPass (0);
 
 		GL.PushMatrix ();
 
-		// Draw line to seeking target
-		GL.Begin (GL.LINES);
-		GL.Color (seekingLineColor);
-		GL.Vertex (transform.position);
-		GL.Vertex (seekingTarget.position);
-		GL.End ();
-		Debug.DrawLine (transform.position, seekingTarget.position, seekingLineColor);
+		base.OnRenderObject ();
+
+		if (seekingTarget != null) {
+			// Draw line to seeking target
+			DrawDebugLine (seekingTarget.position, seekingLineColor);
+		}
 
 		GL.PopMatrix ();
 

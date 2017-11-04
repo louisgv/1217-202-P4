@@ -95,34 +95,6 @@ public static class SteeringForce
 	}
 
 	/// <summary>
-	/// Gets the obstacle avoidance force.
-	/// </summary>
-	/// <returns>The evasion force.</returns>
-	/// <param name="target">Target.</param>
-	internal static Vector3 GetAvoidanceForce (Vehicle vehicle, Vector3 target)
-	{
-		var diff = target - vehicle.transform.position;
-
-		var forwardProjection = Vector3.Dot (diff, vehicle.transform.forward);
-
-		if (forwardProjection < 0) {
-			return Vector3.zero;
-		}
-
-		var rightProjection = Vector3.Dot (diff, vehicle.transform.right);
-
-		var desiredDirection = (rightProjection > 0
-		                       // Object to the right, turn left
-			? -vehicle.transform.right
-		                       // Object to the left, turn right
-			: vehicle.transform.right);
-
-		var desiredVelocity = desiredDirection.normalized * vehicle.MaxSteeringSpeed;
-
-		return GetSteeringForce (vehicle, desiredVelocity);
-	}
-
-	/// <summary>
 	/// Gets the wandering force.
 	/// </summary>
 	/// <returns>The wandering force.</returns>
@@ -130,13 +102,15 @@ public static class SteeringForce
 	internal static Vector3 GetWanderingForce (Vehicle vehicle)
 	{
 		// Get a position slightly ahead of the vehicle's forward direction
-		var vehicleForward = vehicle.transform.forward.normalized * 3.0f;
+		var wanderCompass = vehicle.transform.position + vehicle.transform.forward * vehicle.wanderingParams.ThresholdSquared;
 
 		// Get a random position
 		var randomDirection = (Vector3)Random.insideUnitCircle;
 
 		// Reconstruct the target position
-		var finalTarget = vehicle.transform.position + vehicleForward + randomDirection;
+		var finalTarget = wanderCompass + randomDirection;
+
+		Debug.DrawLine (vehicle.transform.position, finalTarget);
 
 		return GetSeekingForce (vehicle, finalTarget);
 	}
@@ -174,6 +148,34 @@ public static class SteeringForce
 		}
 
 		desiredVelocity = desiredVelocity.normalized * maxSteeringSpeed;
+
+		return GetSteeringForce (vehicle, desiredVelocity);
+	}
+
+	/// <summary>
+	/// Gets the obstacle avoidance force.
+	/// </summary>
+	/// <returns>The evasion force.</returns>
+	/// <param name="target">Target.</param>
+	internal static Vector3 GetAvoidanceForce (Vehicle vehicle, Vector3 target)
+	{
+		var diff = target - vehicle.transform.position;
+
+		var forwardProjection = Vector3.Dot (diff, vehicle.transform.forward);
+
+		if (forwardProjection < 0) {
+			return Vector3.zero;
+		}
+
+		var rightProjection = Vector3.Dot (diff, vehicle.transform.right);
+
+		var desiredDirection = (rightProjection > 0
+		                       // Object to the right, turn left
+			? -vehicle.transform.right
+		                       // Object to the left, turn right
+			: vehicle.transform.right);
+
+		var desiredVelocity = desiredDirection.normalized * vehicle.MaxSteeringSpeed;
 
 		return GetSteeringForce (vehicle, desiredVelocity);
 	}

@@ -146,15 +146,28 @@ public abstract class Vehicle : MonoBehaviour
 	}
 
 	/// <summary>
+	/// Draws the debug line.
+	/// </summary>
+	protected void DrawDebugLine (Vector3 end, Color color)
+	{
+		Debug.DrawLine (transform.position, end, color);
+		GL.Begin (GL.LINES);
+		GL.Color (color);
+		GL.Vertex (transform.position);
+		GL.Vertex (end);
+		GL.End ();
+	}
+
+	/// <summary>
 	/// Raises the render object event.
 	/// </summary>
 	protected virtual void OnRenderObject ()
 	{
-		Debug.DrawLine (transform.position, transform.position + Velocity * 5.0f, Color.yellow);
+//		DrawDebugLine (transform.position + Velocity * 5.0f, Color.yellow);
 
-		Debug.DrawLine (transform.position, transform.position + transform.right * 3.0f, Color.white);
+		DrawDebugLine (transform.position + transform.right * 3.0f, Color.white);
 
-		Debug.DrawLine (transform.position, transform.position + transform.forward * 3.0f, Color.red);
+		DrawDebugLine (transform.position + transform.forward * 3.0f, Color.red);
 	}
 
 }
