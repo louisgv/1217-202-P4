@@ -53,8 +53,9 @@ public class Predator : SmartBoundedVehicle<PredatorCollider>
 	/// <summary>
 	/// Draw debug line to current target
 	/// </summary>
-	private void OnRenderObject ()
+	protected override void OnRenderObject ()
 	{
+		base.OnRenderObject ();
 		if (seekingTarget == null) {
 			return;
 		}
@@ -69,9 +70,9 @@ public class Predator : SmartBoundedVehicle<PredatorCollider>
 		GL.Vertex (transform.position);
 		GL.Vertex (seekingTarget.position);
 		GL.End ();
+		Debug.DrawLine (transform.position, seekingTarget.position, seekingLineColor);
 
 		GL.PopMatrix ();
 
-		Debug.DrawLine (transform.position, seekingTarget.position, seekingLineColor);
 	}
 }

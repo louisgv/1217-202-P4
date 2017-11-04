@@ -70,13 +70,13 @@ public abstract class SpawningSystem <T>: MonoBehaviour where T : Component
 
 		var targets = new List<Transform> ();
 
-		foreach (var prey in instances) {
-			var diffVector = prey.transform.position - pos;
+		foreach (var instance in instances) {
+			var diffVector = instance.transform.position - pos;
 
 			float distanceSquared = Vector3.Dot (diffVector, diffVector);
 
 			if (minDistanceSquared > distanceSquared) {
-				targets.Add (prey.transform);
+				targets.Add (instance.transform);
 			}
 		}
 

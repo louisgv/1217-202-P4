@@ -62,8 +62,9 @@ public class Prey : SmartBoundedVehicle<PreyCollider>
 	/// <summary>
 	/// Draw debug line to current target
 	/// </summary>
-	private void OnRenderObject ()
+	protected override void OnRenderObject ()
 	{
+		base.OnRenderObject ();
 		if (fleeingTargets == null) {
 			return;
 		}
@@ -82,6 +83,5 @@ public class Prey : SmartBoundedVehicle<PreyCollider>
 		}
 			
 		GL.PopMatrix ();
-
 	}
 }

@@ -101,13 +101,13 @@ public static class SteeringForce
 
 		var rightProjection = Vector3.Dot (diff, vehicle.transform.right);
 
-		var desiredDirection = (rightProjection > 0) 
+		var desiredDirection = (rightProjection > 0
 		                       // Object to the right right, turn left
 			? -vehicle.transform.right
 		                       // Object to the left, turn right
-			: vehicle.transform.right;
+			: vehicle.transform.right);
 
-		var desiredVelocity = desiredDirection * vehicle.MaxSteeringSpeed;
+		var desiredVelocity = desiredDirection.normalized * vehicle.MaxSteeringSpeed;
 
 		return GetSteeringForce (vehicle, desiredVelocity);
 	}

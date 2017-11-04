@@ -14,8 +14,6 @@ abstract public class SmartBoundedVehicle <T>: BoundedVehicle where T : CustomBo
 
 	private float safeRadius;
 
-	private float safeRadiusSquared;
-
 	protected T colliderInstance;
 
 	/// <summary>
@@ -45,23 +43,6 @@ abstract public class SmartBoundedVehicle <T>: BoundedVehicle where T : CustomBo
 	}
 
 
-	/// <summary>
-	/// Gets the obstacle evading force.
-	/// </summary>
-	/// <returns>The obstacle evading force.</returns>
-	protected Vector3 GetObstacleEvadingForce ()
-	{
-		var totalForce = Vector3.zero;
-		
-		var nearbyObstacles = targetObstacleSystem.FindCloseProximityInstances (transform.position, safeRadiusSquared);
-
-		foreach (var obstacle in nearbyObstacles) {
-			totalForce += SteeringForce.GetSteeringForce (this, obstacle, SteeringMode.EVADING);
-		}
-
-		return totalForce;
-	}
-
 	private void Awake ()
 	{
 		colliderInstance = GetComponent <T> ();
@@ -70,9 +51,24 @@ abstract public class SmartBoundedVehicle <T>: BoundedVehicle where T : CustomBo
 
 		xzSize.y = 0;
 
-		safeRadiusSquared = Vector3.Dot (xzSize, xzSize);
-
 		safeRadius = xzSize.magnitude;
+	}
+
+	/// <summary>
+	/// Gets the obstacle evading force.
+	/// </summary>
+	/// <returns>The obstacle evading force.</returns>
+	protected Vector3 GetObstacleEvadingForce ()
+	{
+		var totalForce = Vector3.zero;
+		
+		var nearbyObstacles = targetObstacleSystem.FindCloseProximityInstances (transform.position, evadingParams.ThresholdSquared);
+
+		foreach (var obstacle in nearbyObstacles) {
+			totalForce += SteeringForce.GetSteeringForce (this, obstacle, SteeringMode.EVADING);
+		}
+
+		return totalForce;
 	}
 
 	/// <summary>

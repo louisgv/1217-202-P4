@@ -115,7 +115,7 @@ public abstract class Vehicle : MonoBehaviour
 	/// </summary>
 	protected void RotateTowardMovingDirection ()
 	{
-		var rotationAngle = Mathf.Atan2 (-direction.z, direction.x) * Mathf.Rad2Deg;
+		var rotationAngle = Mathf.Atan2 (direction.x, direction.z) * Mathf.Rad2Deg;
 
 		transform.rotation = Quaternion.Euler (0, rotationAngle, 0);
 	}
@@ -139,4 +139,17 @@ public abstract class Vehicle : MonoBehaviour
 
 		Reset ();
 	}
+
+	/// <summary>
+	/// Raises the render object event.
+	/// </summary>
+	protected virtual void OnRenderObject ()
+	{
+		Debug.DrawLine (transform.position, transform.position + Velocity * 5.0f, Color.yellow);
+
+		Debug.DrawLine (transform.position, transform.position + transform.right * 3.0f, Color.white);
+
+		Debug.DrawLine (transform.position, transform.position + transform.forward * 3.0f, Color.red);
+	}
+
 }
