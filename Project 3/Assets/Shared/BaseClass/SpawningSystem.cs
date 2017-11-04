@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Collections.Specialized;
 
 /// <summary>
 /// Spawning system.
@@ -13,16 +14,17 @@ public abstract class SpawningSystem <T>: MonoBehaviour where T : Component
 
 	public T prefab;
 
+	[SerializeField]
+	protected float gridWidth = 3.0f;
+
 	protected CustomBoxCollider prefabCollider;
 
-	protected HashSet<T> instances;
+	protected Dictionary <string, HashSet<T>> instanceMap;
 
-	protected HashSet<CustomBoxCollider> colliderInstances;
+	protected Dictionary <string, HashSet<CustomBoxCollider>> colliderInstanceMap;
 
 	[SerializeField]
 	protected CubePlaneCollider plane;
-
-
 
 	/// <summary>
 	/// Spawns an entity.
@@ -39,22 +41,31 @@ public abstract class SpawningSystem <T>: MonoBehaviour where T : Component
 		}
 	}
 
+	public Vector3 GetGridCoordinate (Vector3 pos)
+	{
+		return new Vector3 ();
+	}
+
 	/// <summary>
 	/// Add the specified instance.
 	/// </summary>
 	/// <param name="instance">Instance.</param>
 	protected void RegisterVehicle (T instance)
 	{
-		instances.Add (instance);
+		int x = Mathf.CeilToInt (instance.transform.position.x / 2.0f);
 
-		colliderInstances.Add (instance.GetComponent <CustomBoxCollider> ());
+		int y = Mathf.CeilToInt (instance.transform.position.y / 2.0f);
+
+//		instanceMap [x, y] = (instance);
+
+		colliderInstanceMap [x, y] (instance.GetComponent <CustomBoxCollider> ());
 	}
 
 	protected void Awake ()
 	{
-		instances = new HashSet<T> ();
+		instanceMap = new Dictionary<string, HashSet<T>> ();
 
-		colliderInstances = new HashSet<CustomBoxCollider> ();
+		colliderInstanceMap = new Dictionary<string ,HashSet<CustomBoxCollider>> ();
 
 		prefabCollider = prefab.GetComponent <CustomBoxCollider> ();
 
@@ -68,14 +79,14 @@ public abstract class SpawningSystem <T>: MonoBehaviour where T : Component
 	/// <param name="pos">Position.</param>
 	public List<Transform> FindCloseProximityInstances (Vector3 pos, float minDistanceSquared)
 	{
-		if (instances == null || instances.Count == 0) {
+		if (instanceMap == null || instanceMap.Count == 0) {
 			return null;
 		}
 
 		// TODO: Add a delegate parameter here so we can define and reuse the same for loop instead
 		var targets = new List<Transform> ();
 
-		foreach (var instance in instances) {
+		foreach (var instance in instanceMap) {
 			var diffVector = instance.transform.position - pos;
 
 			float distanceSquared = Vector3.Dot (diffVector, diffVector);
@@ -95,14 +106,14 @@ public abstract class SpawningSystem <T>: MonoBehaviour where T : Component
 	/// <param name="pos">Position.</param>
 	public Transform FindNearestInstance (Vector3 pos, float minDistanceSquared = float.MaxValue)
 	{
-		if (instances == null || instances.Count == 0) {
+		if (instanceMap == null || instanceMap.Count == 0) {
 			return null;
 		}
 
 		// Default to null
 		Transform target = null;
 
-		foreach (var prey in instances) {
+		foreach (var prey in instanceMap) {
 			var diffVector = prey.transform.position - pos;
 
 			float distanceSquared = Vector3.Dot (diffVector, diffVector);
@@ -119,23 +130,23 @@ public abstract class SpawningSystem <T>: MonoBehaviour where T : Component
 	}
 
 	/// <summary>
-	/// Gets the spawned instances.
+	/// Gets the instance map.
 	/// </summary>
-	/// <value>The prey instances.</value>
-	public HashSet<T> Instances {
+	/// <value>The instance map.</value>
+	public Dictionary<string, HashSet<T>> InstanceMap {
 		get {
-			return instances;
+			return instanceMap;
 		}
 	}
 
 	/// <summary>
-	/// Gets the spawned collider instances.
+	/// Gets the collider instance map.
 	/// </summary>
-	/// <value>The prey collider instances.</value>
-	public HashSet<CustomBoxCollider> ColliderInstances {
+	/// <value>The collider instance map.</value>
+	public Dictionary<string, HashSet<CustomBoxCollider>> ColliderInstanceMap {
 		get {
-			return colliderInstances;
+			return colliderInstanceMap;
 		}
 	}
-
 }
+
