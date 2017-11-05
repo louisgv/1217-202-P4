@@ -9,22 +9,29 @@ using System.ComponentModel;
 /// Author: LAB
 /// Attached to: N/A
 /// </summary>
-public abstract class SpawningSystem <T>: MonoBehaviour where T : SpawningGridComponent // Ack... Seems like T cannot be just plain component...
+public abstract class SpawningSystem <T>: MonoBehaviour 
+	where T : SpawningGridComponent // Ack... Seems like T cannot be just plain component...
 {
 	public int spawnCount = 9;
 
 	public T prefab;
 
-	[SerializeField]
-	protected float gridWidth = 3.0f;
-
 	protected CustomBoxCollider prefabCollider;
+
+	[SerializeField]
+	protected CubePlaneCollider plane;
+
+	// A x A grid
+	protected int gridResolution = 5;
+
+	// size is max plane size / res
+	protected float gridSize;
 
 	/// <summary>
 	/// Gets the instance map.
 	/// </summary>
 	/// <value>The instance map.</value>
-	protected Dictionary <string, HashSet<T>> InstanceMap {
+	protected Dictionary <SpawningGridCoordinate, HashSet<T>> InstanceMap {
 		get;
 		private set;
 	}
@@ -33,13 +40,10 @@ public abstract class SpawningSystem <T>: MonoBehaviour where T : SpawningGridCo
 	/// Gets the collider instance map.
 	/// </summary>
 	/// <value>The collider instance map.</value>
-	protected Dictionary <string, HashSet<CustomBoxCollider>> ColliderInstanceMap {
+	protected Dictionary <SpawningGridCoordinate, HashSet<CustomBoxCollider>> ColliderInstanceMap {
 		get;
 		private set;
 	}
-
-	[SerializeField]
-	protected CubePlaneCollider plane;
 
 	/// <summary>
 	/// Spawns an entity.
@@ -58,11 +62,15 @@ public abstract class SpawningSystem <T>: MonoBehaviour where T : SpawningGridCo
 
 	protected virtual void Awake ()
 	{
-		InstanceMap = new Dictionary<string, HashSet<T>> ();
+		InstanceMap = new Dictionary<SpawningGridCoordinate, HashSet<T>> ();
 
-		ColliderInstanceMap = new Dictionary<string ,HashSet<CustomBoxCollider>> ();
+		ColliderInstanceMap = new Dictionary<SpawningGridCoordinate, HashSet<CustomBoxCollider>> ();
 
 		prefabCollider = prefab.GetComponent <CustomBoxCollider> ();
+
+		var planeSize = plane.Size;
+
+		gridSize = Mathf.Max (planeSize.x, planeSize.z) / gridResolution;
 
 		SpawnEntities ();
 	}
@@ -74,11 +82,9 @@ public abstract class SpawningSystem <T>: MonoBehaviour where T : SpawningGridCo
 	/// <param name="instance">Instance.</param>
 	public void RegisterVehicle (T instance)
 	{
-		var gridCoord = new SpawningGridCoordinate (instance.transform, gridWidth);
+		var gridCoord = new SpawningGridCoordinate (instance.transform, gridSize, gridResolution);
 
-		instance.GridCoordinate = gridCoord;
-
-		RegisterVehicle (gridCoord.ToString (), instance);
+		RegisterVehicle (gridCoord, instance);
 	}
 
 	/// <summary>
@@ -86,14 +92,16 @@ public abstract class SpawningSystem <T>: MonoBehaviour where T : SpawningGridCo
 	/// </summary>
 	/// <param name="gridKey">Grid key.</param>
 	/// <param name="instance">Instance.</param>
-	public void RegisterVehicle (string gridKey, T instance)
+	public void RegisterVehicle (SpawningGridCoordinate gridKey, T instance)
 	{
 		if (!InstanceMap.ContainsKey (gridKey) ||
 		    !ColliderInstanceMap.ContainsKey (gridKey)) {
 			InstanceMap.Add (gridKey, new HashSet<T> ());
 			ColliderInstanceMap.Add (gridKey, new HashSet<CustomBoxCollider> ());
 		}
-		
+
+		instance.GridCoordinate = gridKey;
+
 		InstanceMap [gridKey].Add (instance);
 
 		ColliderInstanceMap [gridKey].Add (instance.GetComponent <CustomBoxCollider> ());
@@ -104,7 +112,7 @@ public abstract class SpawningSystem <T>: MonoBehaviour where T : SpawningGridCo
 	/// </summary>
 	/// <param name="gridKey">Grid key.</param>
 	/// <param name="instance">Instance.</param>
-	public void RemoveVehicle (string gridKey, T instance)
+	public void RemoveVehicle (SpawningGridCoordinate gridKey, T instance)
 	{
 		InstanceMap [gridKey].Remove (instance);
 
@@ -112,10 +120,10 @@ public abstract class SpawningSystem <T>: MonoBehaviour where T : SpawningGridCo
 	}
 
 	/// <summary>
-	/// Swaps the instance grid if it should update itself.
+	/// Renews the vehicle's grid position.
 	/// </summary>
 	/// <param name="instance">Instance.</param>
-	public void SwapInstanceGrid (T instance)
+	public void RenewVehicle (T instance)
 	{
 		var newGrid = instance.UpdatedGrid ();
 
@@ -125,46 +133,53 @@ public abstract class SpawningSystem <T>: MonoBehaviour where T : SpawningGridCo
 		
 		var currentGrid = instance.GridCoordinate;
 
-		RemoveVehicle (currentGrid.ToString (), instance);
+		RemoveVehicle (currentGrid, instance);
 
-		instance.GridCoordinate = newGrid;
-
-		RegisterVehicle (newGrid.ToString (), instance);
+		RegisterVehicle (newGrid, instance);
 	}
+
+	#region Unity Lifecycle
 
 	protected virtual void Start ()
 	{
-		// TODO: refresh the map every now and then...
 
 	}
 
+	#endregion
 
 	/// <summary>
 	/// Finds the a list of Transform surrounding a certain position.
 	/// </summary>
 	/// <returns>The nearest instance.</returns>
 	/// <param name="pos">Position.</param>
-	public List<Transform> FindCloseProximityInstances (Vector3 pos, float minDistanceSquared)
+	public List<Transform> FindCloseProximityInstances (SpawningGridComponent inst, float minDistanceSquared)
 	{
 		if (InstanceMap == null || InstanceMap.Count == 0) {
 			return null;
 		}
 
-		// Grab the instance set coorespoinding to the current position...
-		var gridKey = SpawningGridCoordinate.GetGridKey (pos, gridWidth);
-
-		var instanceSet = InstanceMap [gridKey];
-
 		// TODO: Add a delegate parameter here so we can define and reuse the same for loop instead
 		var targets = new List<Transform> ();
 
-		foreach (var instance in instanceSet) {
-			var diffVector = instance.transform.position - pos;
+		for (int level = 0; level <= inst.GridCoordinate.MaxTracingLevel; level++) {
+			var adjacentCoords = inst.GridCoordinate.GetAdjacentGrids (level);
 
-			float distanceSquared = Vector3.Dot (diffVector, diffVector);
+			foreach (var coord in adjacentCoords) {
+				if (!InstanceMap.ContainsKey (coord)) {
+					continue;
+				}
 
-			if (minDistanceSquared > distanceSquared) {
-				targets.Add (instance.transform);
+				var instanceSet = InstanceMap [coord];
+
+				foreach (var instance in instanceSet) {
+					var diffVector = instance.transform.position - inst.transform.position;
+					
+					float distanceSquared = Vector3.Dot (diffVector, diffVector);
+					
+					if (minDistanceSquared > distanceSquared) {
+						targets.Add (instance.transform);
+					}
+				}
 			}
 		}
 
@@ -176,36 +191,40 @@ public abstract class SpawningSystem <T>: MonoBehaviour where T : SpawningGridCo
 	/// </summary>
 	/// <returns>The nearest instance.</returns>
 	/// <param name="pos">Position.</param>
-	public Transform FindNearestInstance (Vector3 pos, float minDistanceSquared = float.MaxValue)
+	public Transform FindNearestInstance (SpawningGridComponent inst, float minDistanceSquared = float.MaxValue)
 	{
 		if (InstanceMap == null || InstanceMap.Count == 0) {
 			return null;
 		}
 
-		// Grab the instance set coorespoinding to the current position...
-		var gridKey = SpawningGridCoordinate.GetGridKey (pos, gridWidth);
-
-		if (!InstanceMap.ContainsKey (gridKey)) {
-			Debug.LogError ("INVALID KEY!!! : " + gridKey);
-
-			return null;
-		}
-
-		var instanceSet = InstanceMap [gridKey];
+		var instanceSets = InstanceMap.Values;
 
 		// Default to null
 		Transform target = null;
 
-		foreach (var prey in instanceSet) {
-			var diffVector = prey.transform.position - pos;
+		for (int level = 0; level <= inst.GridCoordinate.MaxTracingLevel; level++) {
+			var adjacentCoords = inst.GridCoordinate.GetAdjacentGrids (level);
 
-			float distanceSquared = Vector3.Dot (diffVector, diffVector);
+			foreach (var coord in adjacentCoords) {
+				if (!InstanceMap.ContainsKey (coord)) {
+					continue;
+				}
+				var instanceSet = InstanceMap [coord];
 
-			if (minDistanceSquared > distanceSquared) {
+				foreach (var instance in instanceSet) {
+					var diffVector = instance.transform.position - inst.transform.position;
 
-				minDistanceSquared = distanceSquared;
+					float distanceSquared = Vector3.Dot (diffVector, diffVector);
 
-				target = prey.transform;
+					if (minDistanceSquared > distanceSquared) {
+						target = (instance.transform);
+					}
+				}
+			}
+			// If we found a potential target within an inner level,
+			// then we don't have to check the outer level
+			if (target != null) {
+				break;
 			}
 		}
 

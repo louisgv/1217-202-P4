@@ -110,7 +110,7 @@ public static class SteeringForce
 		// Reconstruct the target position
 		var finalTarget = wanderAnchor + randomDirection;
 
-		Debug.DrawLine (wanderAnchor, finalTarget, Color.black);
+		//	Debug.DrawLine (wanderAnchor, finalTarget, Color.black);
 
 		return GetSeekingForce (vehicle, finalTarget);
 	}

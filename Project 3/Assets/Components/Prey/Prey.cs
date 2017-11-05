@@ -66,7 +66,7 @@ public class Prey : SmartBoundedVehicle<PreyCollider, Prey>
 	{
 		var totalForce = Vector3.zero;
 		// Get fleeing force:
-		fleeingTargets = targetPredatorSystem.FindCloseProximityInstances (transform.position, fleeingParams.ThresholdSquared);
+		fleeingTargets = targetPredatorSystem.FindCloseProximityInstances (this, fleeingParams.ThresholdSquared);
 
 		foreach (var fleeingTarget in fleeingTargets) {
 			var fleeingForce = SteeringForce.GetSteeringForce (this, fleeingTarget, SteeringMode.FLEEING);

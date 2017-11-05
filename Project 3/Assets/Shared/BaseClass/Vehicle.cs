@@ -58,16 +58,6 @@ public abstract class Vehicle : SpawningGridComponent
 	/// <value>The velocity.</value>
 	public Vector3 Velocity { get ; private set; }
 
-	protected virtual void Awake ()
-	{
-
-	}
-
-	protected virtual void Start ()
-	{
-		
-	}
-
 	/// <summary>
 	/// Gets the steering force.
 	/// </summary>
@@ -116,12 +106,28 @@ public abstract class Vehicle : SpawningGridComponent
 	/// <summary>
 	/// Reset variable that has small rate of change, e.g acceleration
 	/// </summary>
-	protected void Reset ()
+	protected virtual void Reset ()
 	{
 		acceleration = Vector3.zero;
 	}
 
-	// Update is called once per frame
+	#region Unity Lifecycle
+
+	protected virtual void Awake ()
+	{
+
+	}
+
+	protected virtual void Start ()
+	{
+
+	}
+
+	protected virtual void Update ()
+	{
+
+	}
+
 	protected virtual void LateUpdate ()
 	{
 		ApplyForce (GetTotalSteeringForce ());
@@ -132,6 +138,8 @@ public abstract class Vehicle : SpawningGridComponent
 
 		Reset ();
 	}
+
+	#endregion
 
 	/// <summary>
 	/// Draws the debug line from transform' center.

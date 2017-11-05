@@ -24,7 +24,10 @@ public abstract class SpawningGridComponent : MonoBehaviour
 	/// <returns>Updated grid position, else null.</returns>
 	public SpawningGridCoordinate UpdatedGrid ()
 	{
-		var updatedGrid = new SpawningGridCoordinate (transform, GridCoordinate.GridWidth);
+		var updatedGrid = new SpawningGridCoordinate (
+			                  transform, GridCoordinate.GridSize,
+			                  GridCoordinate.GridResolution
+		                  );
 
 		return  updatedGrid != GridCoordinate 
 				? updatedGrid 

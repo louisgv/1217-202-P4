@@ -38,7 +38,7 @@ public class Predator : SmartBoundedVehicle<PredatorCollider, Predator>
 	/// <returns>The total steering force.</returns>
 	protected override Vector3 GetTotalSteeringForce ()
 	{
-		seekingTarget = targetPreySystem.FindNearestInstance (transform.position);
+		seekingTarget = targetPreySystem.FindNearestInstance (this);
 
 		var seekingForce = SteeringForce.GetSteeringForce (this, seekingTarget, SteeringMode.SEEKING);
 

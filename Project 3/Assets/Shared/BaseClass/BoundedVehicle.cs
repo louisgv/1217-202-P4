@@ -13,20 +13,12 @@ public abstract class BoundedVehicle : Vehicle
 	[SerializeField]
 	public SteeringParams boundingParams;
 
-	protected CubePlaneCollider boundingPlane;
 
 	/// <summary>
 	/// Gets or sets the bounding plane.
 	/// </summary>
 	/// <value>The bounding plane.</value>
-	public CubePlaneCollider BoundingPlane {
-		get {
-			return boundingPlane;
-		}
-		set {
-			boundingPlane = value;
-		}
-	}
+	public CubePlaneCollider BoundingPlane { get; set; }
 
 	/// <summary>
 	/// Gets the bounding force.
@@ -34,6 +26,6 @@ public abstract class BoundedVehicle : Vehicle
 	/// <returns>The bounding force.</returns>
 	protected Vector3 GetBoundingForce ()
 	{
-		return SteeringForce.GetBoundingForce (this, boundingPlane);
+		return SteeringForce.GetBoundingForce (this, BoundingPlane);
 	}
 }
