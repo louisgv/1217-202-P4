@@ -14,7 +14,7 @@ public abstract class SpawningGridComponent : MonoBehaviour
 	/// Gets the grid coordinate.
 	/// </summary>
 	/// <value>The grid coordinate.</value>
-	public SpawningGridCoordinate GridCoordinate { get; private set; }
+	public SpawningGridCoordinate GridCoordinate { get; set; }
 
 	/// <summary>
 	/// Return an updated grid if the new grid is different from
@@ -26,7 +26,7 @@ public abstract class SpawningGridComponent : MonoBehaviour
 	{
 		var updatedGrid = new SpawningGridCoordinate (transform, GridCoordinate.GridWidth);
 
-		return GridCoordinate != updatedGrid 
+		return  updatedGrid != GridCoordinate 
 				? updatedGrid 
 				: null;
 	}

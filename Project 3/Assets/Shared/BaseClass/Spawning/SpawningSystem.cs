@@ -74,9 +74,11 @@ public abstract class SpawningSystem <T>: MonoBehaviour where T : SpawningGridCo
 	/// <param name="instance">Instance.</param>
 	public void RegisterVehicle (T instance)
 	{
-		var gridKey = SpawningGridCoordinate.GetGridKey (instance.transform, gridWidth);
+		var gridCoord = new SpawningGridCoordinate (instance.transform, gridWidth);
 
-		RegisterVehicle (gridKey, instance);
+		instance.GridCoordinate = gridCoord;
+
+		RegisterVehicle (gridCoord.ToString (), instance);
 	}
 
 	/// <summary>
@@ -86,6 +88,12 @@ public abstract class SpawningSystem <T>: MonoBehaviour where T : SpawningGridCo
 	/// <param name="instance">Instance.</param>
 	public void RegisterVehicle (string gridKey, T instance)
 	{
+		if (!InstanceMap.ContainsKey (gridKey) ||
+		    !ColliderInstanceMap.ContainsKey (gridKey)) {
+			InstanceMap.Add (gridKey, new HashSet<T> ());
+			ColliderInstanceMap.Add (gridKey, new HashSet<CustomBoxCollider> ());
+		}
+		
 		InstanceMap [gridKey].Add (instance);
 
 		ColliderInstanceMap [gridKey].Add (instance.GetComponent <CustomBoxCollider> ());
@@ -117,9 +125,11 @@ public abstract class SpawningSystem <T>: MonoBehaviour where T : SpawningGridCo
 		
 		var currentGrid = instance.GridCoordinate;
 
-		RemoveVehicle (currentGrid, instance);
+		RemoveVehicle (currentGrid.ToString (), instance);
 
-		RegisterVehicle (newGrid, instance);
+		instance.GridCoordinate = newGrid;
+
+		RegisterVehicle (newGrid.ToString (), instance);
 	}
 
 	protected virtual void Start ()
@@ -173,7 +183,13 @@ public abstract class SpawningSystem <T>: MonoBehaviour where T : SpawningGridCo
 		}
 
 		// Grab the instance set coorespoinding to the current position...
-		var gridKey = SpawningGridCoordinate.GetGridKey ();
+		var gridKey = SpawningGridCoordinate.GetGridKey (pos, gridWidth);
+
+		if (!InstanceMap.ContainsKey (gridKey)) {
+			Debug.LogError ("INVALID KEY!!! : " + gridKey);
+
+			return null;
+		}
 
 		var instanceSet = InstanceMap [gridKey];
 
