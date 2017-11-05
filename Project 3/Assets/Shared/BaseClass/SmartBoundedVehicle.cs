@@ -7,6 +7,8 @@ using UnityEngine;
 /// It is a bounded vehicle that avoids obstacles
 /// It is also smart enought to know that it is in a grid
 /// and it is awared of the plane it can walk on
+/// It is also smart because it know to pursue or evade instead
+/// of normal seek/flee
 /// Author: LAB
 /// </summary>
 [RequireComponent (typeof(C))]
@@ -76,6 +78,4 @@ abstract public class SmartBoundedVehicle <C, V>: BoundedVehicle
 
 		return SteeringForce.GetObstacleAvoidanceForce (this, nearbyObstacles);
 	}
-
-
 }

@@ -16,20 +16,11 @@ public class Prey : SmartBoundedVehicle<PreyCollider, Prey>
 
 	private List<Transform> fleeingTargets;
 
-	private PredatorSystem targetPredatorSystem;
-
 	/// <summary>
 	/// Gets or sets the target predator system.
 	/// </summary>
 	/// <value>The target predator system.</value>
-	public PredatorSystem TargetPredatorSystem {
-		get {
-			return targetPredatorSystem;
-		}
-		set {
-			targetPredatorSystem = value;
-		}
-	}
+	public PredatorSystem TargetPredatorSystem { get; set; }
 
 	#region implemented abstract members of Vehicle
 
@@ -66,7 +57,7 @@ public class Prey : SmartBoundedVehicle<PreyCollider, Prey>
 	{
 		var totalForce = Vector3.zero;
 		// Get fleeing force:
-		fleeingTargets = targetPredatorSystem.FindCloseProximityInstances (this, fleeingParams.ThresholdSquared);
+		fleeingTargets = TargetPredatorSystem.FindCloseProximityInstances (this, fleeingParams.ThresholdSquared);
 
 		foreach (var fleeingTarget in fleeingTargets) {
 			var fleeingForce = SteeringForce.GetSteeringForce (this, fleeingTarget, SteeringMode.FLEEING);

@@ -9,7 +9,6 @@ public enum SteeringMode
 {
 	SEEKING,
 	FLEEING,
-	EVADING,
 	AVOIDANCE
 }
 
@@ -26,7 +25,6 @@ public static class SteeringForce
 	internal static SteeringFx[] steeringFunctions = {
 		GetSeekingForce,
 		GetFleeingForce,
-		GetEvadingForce,
 		GetAvoidanceForce
 	};
 
@@ -85,6 +83,23 @@ public static class SteeringForce
 	}
 
 	/// <summary>
+	/// Gets the pursuing force.
+	/// </summary>
+	/// <returns>The pursuing force.</returns>
+	/// <param name="targetTransform">Target transform.</param>
+	internal static Vector3 GetPursuingForce (Vehicle vehicle, Transform targetTransform)
+	{
+		if (targetTransform == null) {
+			return Vector3.zero;
+		}
+
+		var futureTarget = targetTransform.position +
+		                   targetTransform.forward * vehicle.pursuingParams.ThresholdSquared;
+
+		return GetSeekingForce (vehicle, futureTarget);
+	}
+
+	/// <summary>
 	/// Gets the evasion force.
 	/// </summary>
 	/// <returns>The evasion force.</returns>
@@ -102,7 +117,8 @@ public static class SteeringForce
 	internal static Vector3 GetWanderingForce (Vehicle vehicle)
 	{
 		// Get a position slightly ahead of the vehicle's forward direction
-		var wanderAnchor = vehicle.transform.position + vehicle.transform.forward * vehicle.wanderingParams.ThresholdSquared;
+		var wanderAnchor = vehicle.transform.position +
+		                   vehicle.transform.forward * vehicle.wanderingParams.ThresholdSquared;
 
 		// Get a random rotation position
 		var randomDirection = Random.insideUnitSphere;

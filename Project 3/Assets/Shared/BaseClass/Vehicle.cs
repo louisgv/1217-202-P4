@@ -44,6 +44,9 @@ public abstract class Vehicle : SpawningGridComponent
 	public SteeringParams evadingParams;
 
 	[SerializeField]
+	public SteeringParams pursuingParams;
+
+	[SerializeField]
 	public SteeringParams wanderingParams;
 
 	/// <summary>

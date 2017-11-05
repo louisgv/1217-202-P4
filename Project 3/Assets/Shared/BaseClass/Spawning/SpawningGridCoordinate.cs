@@ -143,7 +143,6 @@ public class SpawningGridCoordinate
 	/// <returns>The adjacent grids.</returns>
 	public List <SpawningGridCoordinate> GetAdjacentGrids (int level = 1)
 	{
-		
 		if (level > MaxTracingLevel) {
 			return null;
 		}
@@ -156,10 +155,17 @@ public class SpawningGridCoordinate
 		}
 
 		foreach (string dir in DIRECTIONS) {
+			if (level > maxTracingBound [dir]) {
+				continue;
+			}
+			// RAT, this algorithm is wrong, like simply plain wrong...
 			var adjacentDir = AdjacentDirection [dir] * level;
+	
 			var orthgonalDir = OrthogonalDirection [dir];
 
-			for (int i = 0; i < level; i++) {
+			// The pattern of traversal looks like the flying wheel..
+
+			for (int i = 0; i <= level; i++) {
 				var adjacentGrid = GetAdjacentGrid (adjacentDir, orthgonalDir * i);
 				output.Add (adjacentGrid);
 			}

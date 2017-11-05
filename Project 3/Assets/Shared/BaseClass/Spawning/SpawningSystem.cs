@@ -22,7 +22,7 @@ public abstract class SpawningSystem <T>: MonoBehaviour
 	protected CubePlaneCollider plane;
 
 	// A x A grid
-	protected int gridResolution = 5;
+	protected int gridResolution = 9;
 
 	// size is max plane size / res
 	protected float gridSize;
@@ -152,7 +152,10 @@ public abstract class SpawningSystem <T>: MonoBehaviour
 	/// </summary>
 	/// <returns>The nearest instance.</returns>
 	/// <param name="pos">Position.</param>
-	public List<Transform> FindCloseProximityInstances (SpawningGridComponent inst, float minDistanceSquared)
+	public List<Transform> FindCloseProximityInstances (
+		SpawningGridComponent inst, 
+		float minDistanceSquared
+	)
 	{
 		if (InstanceMap == null || InstanceMap.Count == 0) {
 			return null;
@@ -163,6 +166,10 @@ public abstract class SpawningSystem <T>: MonoBehaviour
 
 		for (int level = 0; level <= inst.GridCoordinate.MaxTracingLevel; level++) {
 			var adjacentCoords = inst.GridCoordinate.GetAdjacentGrids (level);
+
+			if (adjacentCoords == null) {
+				continue;
+			}
 
 			foreach (var coord in adjacentCoords) {
 				if (!InstanceMap.ContainsKey (coord)) {
@@ -191,19 +198,24 @@ public abstract class SpawningSystem <T>: MonoBehaviour
 	/// </summary>
 	/// <returns>The nearest instance.</returns>
 	/// <param name="pos">Position.</param>
-	public Transform FindNearestInstance (SpawningGridComponent inst, float minDistanceSquared = float.MaxValue)
+	public Transform FindNearestInstance (
+		SpawningGridComponent inst, 
+		float minDistanceSquared = float.MaxValue
+	)
 	{
 		if (InstanceMap == null || InstanceMap.Count == 0) {
 			return null;
 		}
-
-		var instanceSets = InstanceMap.Values;
 
 		// Default to null
 		Transform target = null;
 
 		for (int level = 0; level <= inst.GridCoordinate.MaxTracingLevel; level++) {
 			var adjacentCoords = inst.GridCoordinate.GetAdjacentGrids (level);
+
+			if (adjacentCoords == null) {
+				continue;
+			}
 
 			foreach (var coord in adjacentCoords) {
 				if (!InstanceMap.ContainsKey (coord)) {
@@ -214,9 +226,11 @@ public abstract class SpawningSystem <T>: MonoBehaviour
 				foreach (var instance in instanceSet) {
 					var diffVector = instance.transform.position - inst.transform.position;
 
-					float distanceSquared = Vector3.Dot (diffVector, diffVector);
+					float distanceSquared = diffVector.sqrMagnitude;
 
 					if (minDistanceSquared > distanceSquared) {
+						minDistanceSquared = distanceSquared;
+
 						target = (instance.transform);
 					}
 				}

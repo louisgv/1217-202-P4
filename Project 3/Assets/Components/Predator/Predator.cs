@@ -15,20 +15,11 @@ public class Predator : SmartBoundedVehicle<PredatorCollider, Predator>
 
 	private Transform seekingTarget;
 
-	private PreySystem targetPreySystem;
-
 	/// <summary>
 	/// Gets or sets the prey system instance.
 	/// </summary>
 	/// <value>The prey system instance.</value>
-	public PreySystem TargetPreySystem {
-		get {
-			return targetPreySystem;
-		}
-		set {
-			targetPreySystem = value;
-		}
-	}
+	public PreySystem TargetPreySystem { get ; set ; }
 
 	#region implemented abstract members of Vehicle
 
@@ -38,18 +29,14 @@ public class Predator : SmartBoundedVehicle<PredatorCollider, Predator>
 	/// <returns>The total steering force.</returns>
 	protected override Vector3 GetTotalSteeringForce ()
 	{
-		seekingTarget = targetPreySystem.FindNearestInstance (this);
+		var totalForce = Vector3.zero;
 
-		var seekingForce = SteeringForce.GetSteeringForce (this, seekingTarget, SteeringMode.SEEKING);
+		seekingTarget = TargetPreySystem.FindNearestInstance (this);
 
-		var totalForce = seekingForce * seekingParams.ForceScale;
-
-		// Check if seeking force is zero, if so add wandering behavior
-		var wanderingForce = seekingForce.Equals (Vector3.zero) 
-			? SteeringForce.GetWanderingForce (this)
-			: Vector3.zero;
-
-		totalForce += wanderingForce * wanderingParams.ForceScale;
+		// Check if seeking target is null, if so add wandering behavior
+		totalForce += seekingTarget == null 
+			? SteeringForce.GetWanderingForce (this) * wanderingParams.ForceScale
+			: SteeringForce.GetPursuingForce (this, seekingTarget) * pursuingParams.ForceScale;
 
 		totalForce += GetTotalObstacleAvoidanceForce () * evadingParams.ForceScale;
 
