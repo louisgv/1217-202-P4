@@ -50,17 +50,5 @@ public class TeleporterCollider : CustomBoxCollider
 
 		transform.position = teleportingPosition;
 	}
-
-	/// <summary>
-	/// Check if any prey is colliding
-	/// If there is, it will teleport
-	/// </summary>
-	private void Update ()
-	{
-		foreach (var preyCollider in spawningSystem.ColliderInstances) {
-			if (IsCollidingWith (preyCollider)) {
-				Teleport ();
-			}
-		}
-	}
+		
 }

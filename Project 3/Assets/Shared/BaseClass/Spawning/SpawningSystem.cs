@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Collections.Specialized;
+using System.ComponentModel;
 
 /// <summary>
 /// Spawning system.
 /// Author: LAB
 /// Attached to: N/A
 /// </summary>
-public abstract class SpawningSystem <T>: MonoBehaviour where T : Component
+public abstract class SpawningSystem <T>: MonoBehaviour where T : SpawningGridComponent // Ack... Seems like T cannot be just plain component...
 {
 	public int spawnCount = 9;
 
@@ -19,9 +20,23 @@ public abstract class SpawningSystem <T>: MonoBehaviour where T : Component
 
 	protected CustomBoxCollider prefabCollider;
 
-	protected Dictionary <string, HashSet<T>> instanceMap;
+	/// <summary>
+	/// Gets the instance map.
+	/// </summary>
+	/// <value>The instance map.</value>
+	protected Dictionary <string, HashSet<T>> InstanceMap {
+		get;
+		private set;
+	}
 
-	protected Dictionary <string, HashSet<CustomBoxCollider>> colliderInstanceMap;
+	/// <summary>
+	/// Gets the collider instance map.
+	/// </summary>
+	/// <value>The collider instance map.</value>
+	protected Dictionary <string, HashSet<CustomBoxCollider>> ColliderInstanceMap {
+		get;
+		private set;
+	}
 
 	[SerializeField]
 	protected CubePlaneCollider plane;
@@ -41,51 +56,70 @@ public abstract class SpawningSystem <T>: MonoBehaviour where T : Component
 		}
 	}
 
-	/// <summary>
-	/// Add the specified instance.
-	/// </summary>
-	/// <param name="instance">Instance.</param>
-	protected void RegisterVehicle (T instance)
-	{
-		var gridKey = SpawningGridCoordinate<T>.GetGridKey ();
-
-		instanceMap [gridKey].Add (instance);
-
-		colliderInstanceMap [gridKey].Add (instance);
-	}
-
 	protected virtual void Awake ()
 	{
-		instanceMap = new Dictionary<string, HashSet<T>> ();
+		InstanceMap = new Dictionary<string, HashSet<T>> ();
 
-		colliderInstanceMap = new Dictionary<string ,HashSet<CustomBoxCollider>> ();
+		ColliderInstanceMap = new Dictionary<string ,HashSet<CustomBoxCollider>> ();
 
 		prefabCollider = prefab.GetComponent <CustomBoxCollider> ();
 
 		SpawnEntities ();
 	}
 
+
 	/// <summary>
-	/// Refreshs the instance maps to reflect the new grid.
+	/// Add the specified instance.
 	/// </summary>
-	protected void RefreshMap ()
+	/// <param name="instance">Instance.</param>
+	public void RegisterVehicle (T instance)
 	{
-		/// Ho, if each vehicle has an instance of its own grid, then there's no problem
-		/// for each of them to call this parent SpawningSystem
-		/// To reassign itself to a different map!...
-		/// 
-		/// Hmmm...
-		/// Something like a method to move from map to map??
-		/// 
-		/// Every frame, the instace will get a new grid location,
-		/// 
-		/// and tell spawn system to remove itself from the set of the current grid
-		/// 
-		/// and then add it to a new grid
-		/// 
-		/// Now, the only problem is will the removed instance hash the correct hash...
-		/// 
-		/// Let's hope so..
+		var gridKey = SpawningGridCoordinate.GetGridKey (instance.transform, gridWidth);
+
+		RegisterVehicle (gridKey, instance);
+	}
+
+	/// <summary>
+	/// Registers the vehicle.
+	/// </summary>
+	/// <param name="gridKey">Grid key.</param>
+	/// <param name="instance">Instance.</param>
+	public void RegisterVehicle (string gridKey, T instance)
+	{
+		InstanceMap [gridKey].Add (instance);
+
+		ColliderInstanceMap [gridKey].Add (instance.GetComponent <CustomBoxCollider> ());
+	}
+
+	/// <summary>
+	/// Removes the vehicle.
+	/// </summary>
+	/// <param name="gridKey">Grid key.</param>
+	/// <param name="instance">Instance.</param>
+	public void RemoveVehicle (string gridKey, T instance)
+	{
+		InstanceMap [gridKey].Remove (instance);
+
+		ColliderInstanceMap [gridKey].Remove (instance.GetComponent <CustomBoxCollider> ());
+	}
+
+	/// <summary>
+	/// Swaps the instance grid if it should update itself.
+	/// </summary>
+	/// <param name="instance">Instance.</param>
+	public void SwapInstanceGrid (T instance)
+	{
+		var newGrid = instance.UpdatedGrid ();
+
+		if (newGrid == null) {
+			return;
+		}
+		
+		var currentGrid = instance.GridCoordinate;
+
+		RemoveVehicle (currentGrid, instance);
+
+		RegisterVehicle (newGrid, instance);
 	}
 
 	protected virtual void Start ()
@@ -102,15 +136,14 @@ public abstract class SpawningSystem <T>: MonoBehaviour where T : Component
 	/// <param name="pos">Position.</param>
 	public List<Transform> FindCloseProximityInstances (Vector3 pos, float minDistanceSquared)
 	{
-		if (instanceMap == null || instanceMap.Count == 0) {
+		if (InstanceMap == null || InstanceMap.Count == 0) {
 			return null;
 		}
 
-
 		// Grab the instance set coorespoinding to the current position...
-		var gridKey = SpawningGridCoordinate<T>.GetGridKey ();
+		var gridKey = SpawningGridCoordinate.GetGridKey (pos, gridWidth);
 
-		var instanceSet = instanceMap [gridKey];
+		var instanceSet = InstanceMap [gridKey];
 
 		// TODO: Add a delegate parameter here so we can define and reuse the same for loop instead
 		var targets = new List<Transform> ();
@@ -135,14 +168,14 @@ public abstract class SpawningSystem <T>: MonoBehaviour where T : Component
 	/// <param name="pos">Position.</param>
 	public Transform FindNearestInstance (Vector3 pos, float minDistanceSquared = float.MaxValue)
 	{
-		if (instanceMap == null || instanceMap.Count == 0) {
+		if (InstanceMap == null || InstanceMap.Count == 0) {
 			return null;
 		}
 
 		// Grab the instance set coorespoinding to the current position...
-		var gridKey = SpawningGridCoordinate<T>.GetGridKey ();
+		var gridKey = SpawningGridCoordinate.GetGridKey ();
 
-		var instanceSet = instanceMap [gridKey];
+		var instanceSet = InstanceMap [gridKey];
 
 		// Default to null
 		Transform target = null;
@@ -161,26 +194,6 @@ public abstract class SpawningSystem <T>: MonoBehaviour where T : Component
 		}
 
 		return target;
-	}
-
-	/// <summary>
-	/// Gets the instance map.
-	/// </summary>
-	/// <value>The instance map.</value>
-	public Dictionary<string, HashSet<T>> InstanceMap {
-		get {
-			return instanceMap;
-		}
-	}
-
-	/// <summary>
-	/// Gets the collider instance map.
-	/// </summary>
-	/// <value>The collider instance map.</value>
-	public Dictionary<string, HashSet<CustomBoxCollider>> ColliderInstanceMap {
-		get {
-			return colliderInstanceMap;
-		}
 	}
 }
 

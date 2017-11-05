@@ -8,7 +8,7 @@ using UnityEngine;
 /// Attached to: Obstacle
 /// Author: LAB
 /// </summary>
-public class Obstacle : MonoBehaviour
+public class Obstacle : SpawningGridComponent
 {
 
 }

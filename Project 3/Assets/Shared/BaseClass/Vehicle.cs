@@ -8,7 +8,7 @@ using System;
 /// Author LAB
 /// Attached to: N/A
 /// </summary>
-public abstract class Vehicle : MonoBehaviour
+public abstract class Vehicle : SpawningGridComponent
 {
 	[SerializeField]
 	private float mass = 1.0f;
@@ -34,8 +34,6 @@ public abstract class Vehicle : MonoBehaviour
 
 	private Vector3 acceleration;
 
-	private Vector3 direction;
-
 	[SerializeField]
 	public SteeringParams fleeingParams;
 
@@ -52,23 +50,13 @@ public abstract class Vehicle : MonoBehaviour
 	/// Gets the direction.
 	/// </summary>
 	/// <value>The direction.</value>
-	public Vector3 Direction {
-		get {
-			return direction;
-		}
-	}
-
-	private Vector3 velocity;
+	public Vector3 Direction { get; private set; }
 
 	/// <summary>
 	/// Gets the velocity.
 	/// </summary>
 	/// <value>The velocity.</value>
-	public Vector3 Velocity {
-		get {
-			return velocity;
-		}
-	}
+	public Vector3 Velocity { get ; private set; }
 
 	protected virtual void Awake ()
 	{
@@ -108,11 +96,11 @@ public abstract class Vehicle : MonoBehaviour
 	/// </summary>
 	protected void Move ()
 	{
-		velocity += acceleration * Time.deltaTime;
+		Velocity += acceleration * Time.deltaTime;
 
-		direction = velocity.normalized;
+		Direction = Velocity.normalized;
 
-		transform.position += velocity * Time.deltaTime;
+		transform.position += Velocity * Time.deltaTime;
 	}
 
 	/// <summary>
@@ -120,7 +108,7 @@ public abstract class Vehicle : MonoBehaviour
 	/// </summary>
 	protected void RotateTowardMovingDirection ()
 	{
-		var rotationAngle = Mathf.Atan2 (direction.x, direction.z) * Mathf.Rad2Deg;
+		var rotationAngle = Mathf.Atan2 (Direction.x, Direction.z) * Mathf.Rad2Deg;
 
 		transform.rotation = Quaternion.Euler (0, rotationAngle, 0);
 	}
@@ -146,7 +134,7 @@ public abstract class Vehicle : MonoBehaviour
 	}
 
 	/// <summary>
-	/// Draws the debug line.
+	/// Draws the debug line from transform' center.
 	/// </summary>
 	protected void DrawDebugLine (Vector3 end, Color color)
 	{
