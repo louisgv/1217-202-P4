@@ -158,7 +158,7 @@ public class SpawningGridCoordinate
 			if (level > maxTracingBound [dir]) {
 				continue;
 			}
-			// RAT, this algorithm is wrong, like simply plain wrong...
+
 			var adjacentDir = AdjacentDirection [dir];
 			var adjacentDirScaled = adjacentDir * level;
 

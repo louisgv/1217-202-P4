@@ -11,7 +11,7 @@ public class Predator : SmartBoundedVehicle<PredatorCollider, Predator>
 {
 	public Material glLineMaterial;
 
-	private Color seekingLineColor = Color.black;
+	private Color seekingLineColor = Color.white;
 
 	private Transform seekingTarget;
 
