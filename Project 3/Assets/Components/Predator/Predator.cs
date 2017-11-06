@@ -36,7 +36,8 @@ public class Predator : SmartBoundedVehicle<PredatorCollider, Predator>
 		// Check if seeking target is null, if so add wandering behavior
 		totalForce += seekingTarget == null 
 			? SteeringForce.GetWanderingForce (this) * wanderingParams.ForceScale
-			: SteeringForce.GetPursuingForce (this, seekingTarget) * pursuingParams.ForceScale;
+			: SteeringForce.GetSteeringForce (this, seekingTarget, 
+			SteeringMode.PURSUING) * pursuingParams.ForceScale;
 
 		totalForce += GetTotalObstacleAvoidanceForce () * evadingParams.ForceScale;
 

@@ -110,16 +110,6 @@ public class SpawningGridCoordinate
 	}
 
 	/// <summary>
-	/// Initializes a new instance of the <see cref="SpawningGridCoordinate"/> class.
-	/// </summary>
-	/// <param name="t">Transform</param>
-	/// <param name="gridWidth">Grid width.</param>
-	public SpawningGridCoordinate (Transform t, float gridSize, int gridResolution)
-		: this (t.position, gridSize, gridResolution)
-	{
-	}
-
-	/// <summary>
 	/// Gets the adjacent grid.
 	/// </summary>
 	/// <returns>The adjacent grid.</returns>
@@ -181,31 +171,6 @@ public class SpawningGridCoordinate
 		}
 
 		return output;
-	}
-
-	/// <summary>
-	/// Gets the grid key.
-	/// </summary>
-	/// <returns>The grid key.</returns>
-	/// <param name="instanceTransform">Instance transform.</param>
-	/// <param name="gridWidth">Grid width.</param>
-	public static string GetGridKey (Transform instanceTransform, float gridSize)
-	{
-		return GetGridKey (instanceTransform.position, gridSize);
-	}
-
-
-	/// <summary>
-	/// Gets the grid key.
-	/// </summary>
-	/// <returns>The grid key.</returns>
-	/// <param name="pos">Position.</param>
-	/// <param name="gridWidth">Grid width.</param>
-	public static string GetGridKey (Vector3 pos, float gridSize)
-	{
-		var gridCoord = new SpawningGridCoordinate (pos, gridSize, 0);
-
-		return gridCoord.ToString ();
 	}
 
 	/// <summary>

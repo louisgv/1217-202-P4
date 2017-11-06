@@ -13,13 +13,6 @@ public abstract class BoundedVehicle : Vehicle
 	[SerializeField]
 	public SteeringParams boundingParams;
 
-
-	/// <summary>
-	/// Gets or sets the bounding plane.
-	/// </summary>
-	/// <value>The bounding plane.</value>
-	public CubePlaneCollider BoundingPlane { get; set; }
-
 	/// <summary>
 	/// Gets the bounding force.
 	/// </summary>

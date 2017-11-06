@@ -82,7 +82,9 @@ public abstract class SpawningSystem <T>: MonoBehaviour
 	/// <param name="instance">Instance.</param>
 	public void RegisterVehicle (T instance)
 	{
-		var gridCoord = new SpawningGridCoordinate (instance.transform, gridSize, gridResolution);
+		var localGridPos = instance.transform.position - plane.WorldCenter;
+
+		var gridCoord = new SpawningGridCoordinate (localGridPos, gridSize, gridResolution);
 
 		RegisterVehicle (gridCoord, instance);
 	}
@@ -237,9 +239,9 @@ public abstract class SpawningSystem <T>: MonoBehaviour
 			}
 			// If we found a potential target within an inner level,
 			// then we don't have to check the outer level
-			if (target != null) {
-				break;
-			}
+//			if (target != null) {
+//				break;
+//			}
 		}
 
 		return target;

@@ -9,7 +9,8 @@ public enum SteeringMode
 {
 	SEEKING,
 	FLEEING,
-	AVOIDANCE
+	AVOIDANCE,
+	PURSUING
 }
 
 /// <summary>
@@ -25,7 +26,8 @@ public static class SteeringForce
 	internal static SteeringFx[] steeringFunctions = {
 		GetSeekingForce,
 		GetFleeingForce,
-		GetAvoidanceForce
+		GetAvoidanceForce,
+		GetPursuingForce
 	};
 
 	/// <summary>
@@ -87,16 +89,23 @@ public static class SteeringForce
 	/// </summary>
 	/// <returns>The pursuing force.</returns>
 	/// <param name="targetTransform">Target transform.</param>
-	internal static Vector3 GetPursuingForce (Vehicle vehicle, Transform targetTransform)
+	internal static Vector3 GetPursuingForce (Vehicle vehicle, Vector3 target)
 	{
-		if (targetTransform == null) {
-			return Vector3.zero;
-		}
+		var diff = target - vehicle.transform.position;
 
-		var futureTarget = targetTransform.position +
-		                   targetTransform.forward * vehicle.pursuingParams.ThresholdSquared;
+		var distanceSquared = diff.sqrMagnitude;
 
-		return GetSeekingForce (vehicle, futureTarget);
+		float desiredSpeed = 
+			(vehicle.pursuingParams.ThresholdSquared > distanceSquared) 
+			? ProcessingMap (
+				distanceSquared, 0, 
+				vehicle.pursuingParams.ThresholdSquared, 0, 
+				vehicle.MaxSteeringSpeed)
+			: vehicle.MaxSteeringSpeed;
+
+		var desiredVelocity = diff.normalized * desiredSpeed;
+
+		return GetSteeringForce (vehicle, desiredVelocity);
 	}
 
 	/// <summary>
@@ -228,4 +237,23 @@ public static class SteeringForce
 
 		return SteeringForce.GetSteeringForce (vehicle, desiredVelocity);
 	}
+
+	/// <summary>
+	/// The map function from Processing
+	/// </summary>
+	/// <returns>The map.</returns>
+	/// <param name="value">Value.</param>
+	/// <param name="istart">Istart.</param>
+	/// <param name="istop">Istop.</param>
+	/// <param name="ostart">Ostart.</param>
+	/// <param name="ostop">Ostop.</param>
+	public static float ProcessingMap (float value, 
+	                                   float istart, 
+	                                   float istop, 
+	                                   float ostart, 
+	                                   float ostop)
+	{
+		return ostart + (ostop - ostart) * ((value - istart) / (istop - istart));
+	}
+
 }

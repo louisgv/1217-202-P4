@@ -17,6 +17,12 @@ public abstract class SpawningGridComponent : MonoBehaviour
 	public SpawningGridCoordinate GridCoordinate { get; set; }
 
 	/// <summary>
+	/// Gets or sets the bounding plane.
+	/// </summary>
+	/// <value>The bounding plane.</value>
+	public CubePlaneCollider BoundingPlane { get; set; }
+
+	/// <summary>
 	/// Return an updated grid if the new grid is different from
 	/// current grid position, else it return null
 	/// as a checking mechanism
@@ -24,8 +30,10 @@ public abstract class SpawningGridComponent : MonoBehaviour
 	/// <returns>Updated grid position, else null.</returns>
 	public SpawningGridCoordinate UpdatedGrid ()
 	{
+		var localGridPos = transform.position - BoundingPlane.WorldCenter;
+		
 		var updatedGrid = new SpawningGridCoordinate (
-			                  transform, GridCoordinate.GridSize,
+			                  localGridPos, GridCoordinate.GridSize,
 			                  GridCoordinate.GridResolution
 		                  );
 
