@@ -89,7 +89,7 @@ abstract public class SmartBoundedVehicle <C, V>: BoundedVehicle
 		var diff = target.transform.position - transform.position;
 
 		var distanceSquared = diff.sqrMagnitude;
-
+		// this will cramp naturally as the diff get smaller 
 		float predictionTimeSquared = distanceSquared / MaxSteeringSpeedSquared;
 
 		return target.transform.position + target.Velocity * Mathf.Sqrt (predictionTimeSquared);

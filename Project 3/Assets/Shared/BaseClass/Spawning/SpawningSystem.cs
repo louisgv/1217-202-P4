@@ -50,7 +50,17 @@ public abstract class SpawningSystem <T>: MonoBehaviour
 	/// <summary>
 	/// Spawns an entity.
 	/// </summary>
-	protected abstract void SpawnEntity ();
+	protected virtual void SpawnEntity ()
+	{
+		var spawnPos = plane.GetRandomPositionAbove (prefabCollider);
+		SpawnEntity (spawnPos);
+	}
+
+	/// <summary>
+	/// Spawns an entity at the specified position.
+	/// </summary>
+	/// <param name="pos">Position.</param>
+	public abstract void SpawnEntity (Vector3 pos);
 
 	/// <summary>
 	/// Spawns the entities.
@@ -164,7 +174,7 @@ public abstract class SpawningSystem <T>: MonoBehaviour
 	/// <returns>The nearest instance.</returns>
 	/// <param name="pos">Position.</param>
 	public List<Transform> FindCloseProximityInstances (
-		SpawningGridComponent inst, 
+		SpawningGridComponent inst,
 		float minDistanceSquared
 	)
 	{

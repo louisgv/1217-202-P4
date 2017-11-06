@@ -13,12 +13,14 @@ public class ObstacleSystem : SpawningSystem <Obstacle>
 	#region implemented abstract members of SpawningSystem
 
 	/// <summary>
-	/// Empty abstract as it is not needed
+	/// Spawns an entity at the specified position.
 	/// </summary>
-	/// <param name="index">Index.</param>
-	protected override void SpawnEntity ()
+	/// <param name="pos">Position.</param>
+	public override void SpawnEntity (Vector3 pos)
 	{
-		// INTENTIONALLY LEFT BLANK	
+		var instance = Instantiate (prefab, pos, Quaternion.identity, transform);
+
+		RegisterVehicle (instance);
 	}
 
 	/// <summary>
@@ -41,9 +43,7 @@ public class ObstacleSystem : SpawningSystem <Obstacle>
 			for (int z = 0; z < zCount; z++) {
 				var spawnPos = minBound + new Vector3 (x * xStep, 0, z * zStep) + initialPos;
 				
-				var instance = Instantiate (prefab, spawnPos, Quaternion.identity, transform);
-				
-				RegisterVehicle (instance);
+				SpawnEntity (spawnPos);
 			}
 		}
 	}

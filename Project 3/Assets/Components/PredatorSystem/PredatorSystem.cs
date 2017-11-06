@@ -19,14 +19,12 @@ public class PredatorSystem : SpawningSystem <Predator>
 	#region implemented abstract members of SpawningSystem
 
 	/// <summary>
-	/// Spawns the preys.
+	/// Spawns an entity at the specified position.
 	/// </summary>
-	/// <param name="index">Index.</param>
-	protected override void SpawnEntity ()
+	/// <param name="pos">Position.</param>
+	public override void SpawnEntity (Vector3 pos)
 	{
-		var predatorPos = plane.GetRandomPositionAbove (prefabCollider);
-
-		var predatorInstance = Instantiate (prefab, predatorPos, Quaternion.identity, transform);
+		var predatorInstance = Instantiate (prefab, pos, Quaternion.identity, transform);
 
 		predatorInstance.ParentSystem = this;
 		predatorInstance.TargetPreySystem = targetPreySystem;
