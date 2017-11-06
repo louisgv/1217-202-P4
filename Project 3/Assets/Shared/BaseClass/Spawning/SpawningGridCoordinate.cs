@@ -159,14 +159,23 @@ public class SpawningGridCoordinate
 				continue;
 			}
 			// RAT, this algorithm is wrong, like simply plain wrong...
-			var adjacentDir = AdjacentDirection [dir] * level;
-	
-			var orthgonalDir = OrthogonalDirection [dir];
+			var adjacentDir = AdjacentDirection [dir];
+			var adjacentDirScaled = adjacentDir * level;
+
+			var orthogonalDir = OrthogonalDirection [dir];
+			var orthogonalDirScaled = orthogonalDir * level;
 
 			// The pattern of traversal looks like the flying wheel..
 
 			for (int i = 0; i <= level; i++) {
-				var adjacentGrid = GetAdjacentGrid (adjacentDir, orthgonalDir * i);
+				var adjacentGrid = GetAdjacentGrid (adjacentDirScaled, orthogonalDir * i);
+				output.Add (adjacentGrid);
+			}
+
+			for (int i = 1; i <= level; i++) {
+				var adjacentGrid = GetAdjacentGrid (
+					                   adjacentDirScaled + orthogonalDirScaled, 
+					                   -adjacentDir * i);
 				output.Add (adjacentGrid);
 			}
 		}
