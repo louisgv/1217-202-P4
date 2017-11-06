@@ -10,6 +10,8 @@ using System;
 /// </summary>
 public abstract class Vehicle : SpawningGridComponent
 {
+	private bool debugLine = true;
+	
 	[SerializeField]
 	private float mass = 1.0f;
 
@@ -32,6 +34,16 @@ public abstract class Vehicle : SpawningGridComponent
 		}
 	}
 
+	/// <summary>
+	/// Gets the max steering speed squared.
+	/// </summary>
+	/// <value>The max steering speed squared.</value>
+	public float MaxSteeringSpeedSquared {
+		get {
+			return maxSteeringSpeed * maxSteeringSpeed;
+		}
+	}
+
 	private Vector3 acceleration;
 
 	[SerializeField]
@@ -41,13 +53,23 @@ public abstract class Vehicle : SpawningGridComponent
 	public SteeringParams seekingParams;
 
 	[SerializeField]
-	public SteeringParams evadingParams;
-
-	[SerializeField]
-	public SteeringParams pursuingParams;
-
-	[SerializeField]
 	public SteeringParams wanderingParams;
+
+	private float wanderAngle = 0;
+
+	/// <summary>
+	/// Gets the wander angle.
+	/// </summary>
+	/// <value>The wander angle.</value>
+	public float WanderAngle { get { return wanderAngle; } set { wanderAngle = value; } }
+
+	private float wanderRange = 0.333f;
+
+	/// <summary>
+	/// Gets or sets the wander range.
+	/// </summary>
+	/// <value>The wander range.</value>
+	public float WanderRange { get { return wanderRange; } }
 
 	/// <summary>
 	/// Gets the direction.
@@ -60,6 +82,12 @@ public abstract class Vehicle : SpawningGridComponent
 	/// </summary>
 	/// <value>The velocity.</value>
 	public Vector3 Velocity { get ; private set; }
+
+	/// <summary>
+	/// Gets the future position.
+	/// </summary>
+	/// <value>The future position.</value>
+	public Vector3 FuturePosition { get; set; }
 
 	/// <summary>
 	/// Gets the steering force.
@@ -128,7 +156,9 @@ public abstract class Vehicle : SpawningGridComponent
 
 	protected virtual void Update ()
 	{
-
+		if (Input.GetKeyDown (KeyCode.D)) {
+			debugLine = !debugLine;
+		}
 	}
 
 	protected virtual void LateUpdate ()
@@ -149,6 +179,9 @@ public abstract class Vehicle : SpawningGridComponent
 	/// </summary>
 	protected void DrawDebugLine (Vector3 end, Color color)
 	{
+		if (!debugLine) {
+			return;
+		}
 		Debug.DrawLine (transform.position, end, color);
 		GL.Begin (GL.LINES);
 		GL.Color (color);
@@ -157,16 +190,31 @@ public abstract class Vehicle : SpawningGridComponent
 		GL.End ();
 	}
 
+	protected void DrawDebugMark (Vector3 pos, Color color)
+	{
+		if (!debugLine) {
+			return;
+		}
+
+		GL.Begin (GL.LINES);
+		GL.Color (color);
+		GL.Vertex (pos + transform.right);
+		GL.Vertex (pos - transform.right);
+		GL.Vertex (pos);
+		GL.Vertex (pos + transform.forward);
+		GL.Vertex (pos + transform.up);
+		GL.Vertex (pos - transform.up);
+		GL.End ();
+	}
+
 	/// <summary>
 	/// Raises the render object event.
 	/// </summary>
 	protected virtual void OnRenderObject ()
 	{
-//		DrawDebugLine (transform.position + Velocity * 5.0f, Color.yellow);
+		DrawDebugLine (transform.position + transform.right * 3.0f, Color.blue);
 
-		DrawDebugLine (transform.position + transform.right * 3.0f, Color.white);
-
-		DrawDebugLine (transform.position + transform.forward * 3.0f, Color.red);
+		DrawDebugLine (transform.position + transform.forward * 3.0f, Color.green);
 	}
 
 }

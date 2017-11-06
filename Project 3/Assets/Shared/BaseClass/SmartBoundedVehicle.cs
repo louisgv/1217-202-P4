@@ -78,4 +78,47 @@ abstract public class SmartBoundedVehicle <C, V>: BoundedVehicle
 
 		return SteeringForce.GetObstacleAvoidanceForce (this, nearbyObstacles);
 	}
+
+	/// <summary>
+	/// Gets the target future position.
+	/// </summary>
+	/// <returns>The target future position.</returns>
+	/// <param name="target">Target.</param>
+	protected Vector3 GetTargetFuturePosition (Vehicle target)
+	{
+		var diff = target.transform.position - transform.position;
+
+		var distanceSquared = diff.sqrMagnitude;
+
+		float predictionTimeSquared = distanceSquared / MaxSteeringSpeedSquared;
+
+		return target.transform.position + target.Velocity * Mathf.Sqrt (predictionTimeSquared);
+	}
+
+	/// <summary>
+	/// Gets the pursuing force.
+	/// </summary>
+	/// <returns>The pursuing force.</returns>
+	protected Vector3 GetPursuingForce (Vehicle target)
+	{
+		var finalTarget = GetTargetFuturePosition (target);
+
+		target.FuturePosition = finalTarget;
+
+		return SteeringForce.GetSeekingForce (this, finalTarget);
+	}
+
+	/// <summary>
+	/// Gets the evading force.
+	/// </summary>
+	/// <returns>The evading force.</returns>
+	/// <param name="target">Target.</param>
+	protected Vector3 GetEvadingForce (Vehicle target)
+	{
+		var finalTarget = GetTargetFuturePosition (target);
+
+		target.FuturePosition = finalTarget;
+
+		return SteeringForce.GetFleeingForce (this, finalTarget);
+	}
 }

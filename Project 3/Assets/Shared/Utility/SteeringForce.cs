@@ -9,8 +9,7 @@ public enum SteeringMode
 {
 	SEEKING,
 	FLEEING,
-	AVOIDANCE,
-	PURSUING
+	AVOIDANCE
 }
 
 /// <summary>
@@ -26,8 +25,7 @@ public static class SteeringForce
 	internal static SteeringFx[] steeringFunctions = {
 		GetSeekingForce,
 		GetFleeingForce,
-		GetAvoidanceForce,
-		GetPursuingForce
+		GetAvoidanceForce
 	};
 
 	/// <summary>
@@ -79,27 +77,14 @@ public static class SteeringForce
 	{
 		var diff = target - vehicle.transform.position;
 
-		var desiredVelocity = diff.normalized * vehicle.MaxSteeringSpeed;
-
-		return GetSteeringForce (vehicle, desiredVelocity);
-	}
-
-	/// <summary>
-	/// Gets the pursuing force.
-	/// </summary>
-	/// <returns>The pursuing force.</returns>
-	/// <param name="targetTransform">Target transform.</param>
-	internal static Vector3 GetPursuingForce (Vehicle vehicle, Vector3 target)
-	{
-		var diff = target - vehicle.transform.position;
-
 		var distanceSquared = diff.sqrMagnitude;
 
+		// Arival implementation:
 		float desiredSpeed = 
-			(vehicle.pursuingParams.ThresholdSquared > distanceSquared) 
+			(vehicle.seekingParams.ThresholdSquared > distanceSquared) 
 			? ProcessingMap (
 				distanceSquared, 0, 
-				vehicle.pursuingParams.ThresholdSquared, 0, 
+				vehicle.seekingParams.ThresholdSquared, 0, 
 				vehicle.MaxSteeringSpeed)
 			: vehicle.MaxSteeringSpeed;
 
@@ -109,35 +94,34 @@ public static class SteeringForce
 	}
 
 	/// <summary>
-	/// Gets the evasion force.
-	/// </summary>
-	/// <returns>The evasion force.</returns>
-	/// <param name="target">Target.</param>
-	internal static Vector3 GetEvadingForce (Vehicle vehicle, Vector3 target)
-	{
-		return Vector3.zero;
-	}
-
-	/// <summary>
 	/// Gets the wandering force.
 	/// </summary>
 	/// <returns>The wandering force.</returns>
 	/// <param name="target">Target.</param>
 	internal static Vector3 GetWanderingForce (Vehicle vehicle)
 	{
-		// Get a position slightly ahead of the vehicle's forward direction
-		var wanderAnchor = vehicle.transform.position +
-		                   vehicle.transform.forward * vehicle.wanderingParams.ThresholdSquared;
-
 		// Get a random rotation position
-		var randomDirection = Random.insideUnitSphere;
+		vehicle.WanderAngle += Random.Range (-1f, 1f) * vehicle.WanderRange;
+
+		var wanderCircle = (vehicle.transform.forward + UnitRotation (vehicle.WanderAngle));
 
 		// Reconstruct the target position
-		var finalTarget = wanderAnchor + randomDirection;
+		var finalTarget = vehicle.transform.position +
+		                  wanderCircle * vehicle.wanderingParams.ThresholdSquared;
 
-		//	Debug.DrawLine (wanderAnchor, finalTarget, Color.black);
+		//	Debug.DrawLine (vehicle.transform.position, finalTarget, Color.black);
 
 		return GetSeekingForce (vehicle, finalTarget);
+	}
+
+	/// <summary>
+	/// An unit vector describing rotation at the specified angle.
+	/// </summary>
+	/// <returns>The rotation.</returns>
+	/// <param name="angle">Angle.</param>
+	internal static Vector3 UnitRotation (float angle)
+	{
+		return new Vector3 (Mathf.Cos (angle), 0, Mathf.Sin (angle));
 	}
 
 	/// <summary>

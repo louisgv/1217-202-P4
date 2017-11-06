@@ -11,7 +11,7 @@ public class Predator : SmartBoundedVehicle<PredatorCollider, Predator>
 {
 	public Material glLineMaterial;
 
-	private Color seekingLineColor = Color.white;
+	private Color seekingLineColor = Color.black;
 
 	private Transform seekingTarget;
 
@@ -34,12 +34,14 @@ public class Predator : SmartBoundedVehicle<PredatorCollider, Predator>
 		seekingTarget = TargetPreySystem.FindNearestInstance (this);
 
 		// Check if seeking target is null, if so add wandering behavior
-		totalForce += seekingTarget == null 
-			? SteeringForce.GetWanderingForce (this) * wanderingParams.ForceScale
-			: SteeringForce.GetSteeringForce (this, seekingTarget, 
-			SteeringMode.PURSUING) * pursuingParams.ForceScale;
+		if (seekingTarget == null) {
+			totalForce += SteeringForce.GetWanderingForce (this) * wanderingParams.ForceScale;
+		} else {
+			var targetPrey = seekingTarget.GetComponent <Prey> ();
+			totalForce += GetPursuingForce (targetPrey) * seekingParams.ForceScale;
+		}
 
-		totalForce += GetTotalObstacleAvoidanceForce () * evadingParams.ForceScale;
+		totalForce += GetTotalObstacleAvoidanceForce () * avoidingParams.ForceScale;
 
 		totalForce += GetTotalNeighborSeparationForce () * separationParams.ForceScale;
 
@@ -62,6 +64,8 @@ public class Predator : SmartBoundedVehicle<PredatorCollider, Predator>
 		GL.PushMatrix ();
 
 		base.OnRenderObject ();
+
+		DrawDebugMark (FuturePosition, Color.red);
 
 		if (seekingTarget != null) {
 			// Draw line to seeking target

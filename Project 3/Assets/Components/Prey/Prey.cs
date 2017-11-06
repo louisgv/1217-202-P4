@@ -12,7 +12,7 @@ public class Prey : SmartBoundedVehicle<PreyCollider, Prey>
 {
 	public Material glLineMaterial;
 
-	private Color fleeingLineColor = Color.green;
+	private Color fleeingLineColor = Color.white;
 
 	private List<Transform> fleeingTargets;
 
@@ -34,9 +34,9 @@ public class Prey : SmartBoundedVehicle<PreyCollider, Prey>
 
 		totalForce += SteeringForce.GetWanderingForce (this) * wanderingParams.ForceScale;
 
-		totalForce += GetTotalFleeingForce () * fleeingParams.ForceScale;
+		totalForce += GetTotalEvadingForce () * fleeingParams.ForceScale;
 
-		totalForce += GetTotalObstacleAvoidanceForce () * evadingParams.ForceScale;
+		totalForce += GetTotalObstacleAvoidanceForce () * avoidingParams.ForceScale;
 
 		totalForce += GetTotalNeighborSeparationForce () * separationParams.ForceScale;
 
@@ -53,14 +53,21 @@ public class Prey : SmartBoundedVehicle<PreyCollider, Prey>
 	/// Gets the total fleeing force.
 	/// </summary>
 	/// <returns>The total fleeing force.</returns>
-	protected Vector3 GetTotalFleeingForce ()
+	protected Vector3 GetTotalEvadingForce ()
 	{
 		var totalForce = Vector3.zero;
 		// Get fleeing force:
 		fleeingTargets = TargetPredatorSystem.FindCloseProximityInstances (this, fleeingParams.ThresholdSquared);
 
+		if (fleeingTargets == null) {
+			return totalForce;
+		}
+
 		foreach (var fleeingTarget in fleeingTargets) {
-			var fleeingForce = SteeringForce.GetSteeringForce (this, fleeingTarget, SteeringMode.FLEEING);
+			var targetPredator = fleeingTarget.GetComponent <Predator> ();
+
+			var fleeingForce = GetEvadingForce (targetPredator);
+
 			totalForce += fleeingForce;
 		}
 
@@ -77,6 +84,8 @@ public class Prey : SmartBoundedVehicle<PreyCollider, Prey>
 		GL.PushMatrix ();
 
 		base.OnRenderObject ();
+
+		DrawDebugMark (FuturePosition, Color.magenta);
 
 		if (fleeingTargets != null) {
 			foreach (var fleeingTarget in fleeingTargets) {

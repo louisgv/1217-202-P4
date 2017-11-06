@@ -14,6 +14,8 @@ public abstract class SpawningSystem <T>: MonoBehaviour
 {
 	public int spawnCount = 9;
 
+	public KeyCode spawnKey;
+
 	public T prefab;
 
 	protected CustomBoxCollider prefabCollider;
@@ -147,6 +149,13 @@ public abstract class SpawningSystem <T>: MonoBehaviour
 
 	}
 
+	protected virtual void Update ()
+	{
+		if (spawnKey != KeyCode.None && Input.GetKeyDown (spawnKey)) {
+			SpawnEntity ();
+		}
+	}
+
 	#endregion
 
 	/// <summary>
@@ -233,15 +242,15 @@ public abstract class SpawningSystem <T>: MonoBehaviour
 					if (minDistanceSquared > distanceSquared) {
 						minDistanceSquared = distanceSquared;
 
-						target = (instance.transform);
+						target = instance.transform;
 					}
 				}
 			}
 			// If we found a potential target within an inner level,
 			// then we don't have to check the outer level
-//			if (target != null) {
-//				break;
-//			}
+			if (target != null) {
+				break;
+			}
 		}
 
 		return target;
