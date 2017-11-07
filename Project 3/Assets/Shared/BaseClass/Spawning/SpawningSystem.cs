@@ -53,6 +53,7 @@ public abstract class SpawningSystem <T>: MonoBehaviour
 	protected virtual void SpawnEntity ()
 	{
 		var spawnPos = plane.GetRandomPositionAbove (prefabCollider);
+
 		SpawnEntity (spawnPos);
 	}
 
@@ -62,8 +63,6 @@ public abstract class SpawningSystem <T>: MonoBehaviour
 	/// <param name="pos">Position.</param>
 	public virtual void SpawnEntityAbovePlane (Vector3 pos)
 	{
-		pos.y = 0;
-
 		var spawnPos = plane.GetSampledPosition (pos, prefabCollider);
 
 		SpawnEntity (spawnPos);

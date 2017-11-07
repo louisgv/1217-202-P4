@@ -17,6 +17,7 @@ public class CubePlaneCollider : CustomBoxCollider
 	/// <param name="col">Col.</param>
 	public Vector3 GetSampledPosition (Vector3 pos, CustomBoxCollider col)
 	{
+		pos.y = WorldCenter.y;
 		return pos + (col.Size.y + Size.y) / 2 * Vector3.up;
 	}
 

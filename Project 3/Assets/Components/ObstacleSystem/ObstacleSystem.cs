@@ -37,7 +37,8 @@ public class ObstacleSystem : SpawningSystem <Obstacle>
 		float xStep = plane.Size.x / xCount;
 		float zStep = plane.Size.z / zCount;
 
-		var initialPos = new Vector3 (xStep, 0, zStep) / 2 + prefabCollider.GetHalfSize ().y * Vector3.up;
+		var initialPos = new Vector3 (xStep, prefabCollider.Size.y, zStep) / 2f
+		                 + plane.Size.y * Vector3.up;
 
 		for (int x = 0; x < xCount; x++) {
 			for (int z = 0; z < zCount; z++) {
