@@ -22,6 +22,9 @@ public class PouchTerrain : MonoBehaviour
 
 	TerrainData terrainData;
 
+	/// <summary>
+	/// Initialize the terrain and its height map
+	/// </summary>
 	private void Awake ()
 	{
 		terrain = GetComponent <Terrain> ();
