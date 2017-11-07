@@ -10,7 +10,7 @@ using System;
 /// </summary>
 public abstract class Vehicle : SpawningGridComponent
 {
-	private bool debugLine = true;
+	private static bool debugLine = true;
 	
 	[SerializeField]
 	private float mass = 1.0f;
@@ -159,12 +159,14 @@ public abstract class Vehicle : SpawningGridComponent
 		if (Input.GetKeyDown (KeyCode.D)) {
 			debugLine = !debugLine;
 		}
+
+		ApplyForce (GetTotalSteeringForce ());
 	}
 
 	protected virtual void LateUpdate ()
 	{
-		ApplyForce (GetTotalSteeringForce ());
-		
+		// Move in late update to ensure it won't be called if
+		// object is destroyed
 		Move ();
 
 		RotateTowardMovingDirection ();
@@ -173,6 +175,14 @@ public abstract class Vehicle : SpawningGridComponent
 	}
 
 	#endregion
+
+	/// <summary>
+	/// Draws the future marker.
+	/// </summary>
+	public void DrawFutureMarker (Color color)
+	{
+		DrawDebugMark (FuturePosition, color);
+	}
 
 	/// <summary>
 	/// Draws the debug line from transform' center.
@@ -190,6 +200,11 @@ public abstract class Vehicle : SpawningGridComponent
 		GL.End ();
 	}
 
+	/// <summary>
+	/// Draws a debug mark at location infront.
+	/// </summary>
+	/// <param name="pos">Position.</param>
+	/// <param name="color">Color.</param>
 	protected void DrawDebugMark (Vector3 pos, Color color)
 	{
 		if (!debugLine) {

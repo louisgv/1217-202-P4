@@ -10,57 +10,43 @@ using UnityEngine;
 
 public class CameraManager : MonoBehaviour
 {
+	public GameObject OverallCamera;
 
-	public GameObject[] cameras;
+	public SmoothFollow SmoothCamera;
 
-	private int currentCameraIndex;
 
 	/// <summary>
 	/// Initialize current index, disable all camera except the first
 	/// </summary>
 	private void Start ()
 	{
-		currentCameraIndex = 0;
+		SetOverallCamera ();
+	}
 
-		foreach (var camera in cameras) {
-			camera.SetActive (false);
+	/// <summary>
+	/// Enable only the overall camera
+	/// </summary>
+	private void SetOverallCamera ()
+	{
+		foreach (Transform child in transform) {
+			child.gameObject.SetActive (false);
 		}
 
-		if (cameras.Length > 0) {
-			cameras [0].SetActive (true);
+		OverallCamera.gameObject.SetActive (true);
+	}
+
+	/// <summary>
+	/// 
+	/// </summary>
+	public void SetSmoothCamera (Transform target)
+	{
+		SmoothCamera.target = target;
+
+		foreach (Transform child in transform) {
+			child.gameObject.SetActive (false);
 		}
-	}
 
-	/// <summary>
-	/// Cycle through the available camera in the camera array
-	/// </summary>
-	/// <returns>The next camera index</returns>
-	private int GetNextCameraIndexCyclic ()
-	{
-		// Cycle index using mod op
-		return (currentCameraIndex + 1) % cameras.Length;
-	}
-
-	/// <summary>
-	/// Disable camera at specified index
-	/// </summary>
-	/// <param name="index">camera index</param>
-	private void DisableCamera (int index)
-	{
-		cameras [index].SetActive (false);
-	}
-
-	/// <summary>
-	/// Find the next camera and enable it
-	/// </summary>
-	/// <returns>The index of the camera enabled</returns>
-	private int EnableNextCamera ()
-	{
-		int nextCameraIndex = GetNextCameraIndexCyclic ();
-
-		cameras [nextCameraIndex].SetActive (true);
-
-		return nextCameraIndex;
+		SmoothCamera.gameObject.SetActive (true);
 	}
 
 	/// <summary>
@@ -70,8 +56,7 @@ public class CameraManager : MonoBehaviour
 	{
 		bool cKeyDown = Input.GetKeyDown (KeyCode.C);
 		if (cKeyDown) {
-			DisableCamera (currentCameraIndex);
-			currentCameraIndex = EnableNextCamera (); // Mutate currentCameraIndex
+			SetOverallCamera ();
 		}
 	}
 

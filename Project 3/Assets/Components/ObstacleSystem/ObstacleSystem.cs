@@ -30,9 +30,9 @@ public class ObstacleSystem : SpawningSystem <Obstacle>
 	{
 		var minBound = plane.GetMinBound ();
 
-		int xCount = spawnCount / 2;
+		int xCount = initialSpawnCount / 2;
 
-		int zCount = spawnCount - xCount;
+		int zCount = initialSpawnCount - xCount;
 
 		float xStep = plane.Size.x / xCount;
 		float zStep = plane.Size.z / zCount;

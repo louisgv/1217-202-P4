@@ -12,7 +12,7 @@ using System.ComponentModel;
 public abstract class SpawningSystem <T>: MonoBehaviour 
 	where T : SpawningGridComponent // Ack... Seems like T cannot be just plain component...
 {
-	public int spawnCount = 9;
+	public int initialSpawnCount = 9;
 
 	public KeyCode spawnKey;
 
@@ -57,6 +57,19 @@ public abstract class SpawningSystem <T>: MonoBehaviour
 	}
 
 	/// <summary>
+	/// Spawns the entity above plane.
+	/// </summary>
+	/// <param name="pos">Position.</param>
+	public virtual void SpawnEntityAbovePlane (Vector3 pos)
+	{
+		pos.y = 0;
+
+		var spawnPos = plane.GetSampledPosition (pos, prefabCollider);
+
+		SpawnEntity (spawnPos);
+	}
+
+	/// <summary>
 	/// Spawns an entity at the specified position.
 	/// </summary>
 	/// <param name="pos">Position.</param>
@@ -67,7 +80,7 @@ public abstract class SpawningSystem <T>: MonoBehaviour
 	/// </summary>
 	protected virtual void SpawnEntities ()
 	{
-		for (int i = 0; i < spawnCount; i++) {
+		for (int i = 0; i < initialSpawnCount; i++) {
 			SpawnEntity ();
 		}
 	}
@@ -126,8 +139,10 @@ public abstract class SpawningSystem <T>: MonoBehaviour
 	/// </summary>
 	/// <param name="gridKey">Grid key.</param>
 	/// <param name="instance">Instance.</param>
-	public void RemoveVehicle (SpawningGridCoordinate gridKey, T instance)
+	public void RemoveVehicle (T instance)
 	{
+		var gridKey = instance.GridCoordinate;
+		
 		InstanceMap [gridKey].Remove (instance);
 
 		ColliderInstanceMap [gridKey].Remove (instance.GetComponent <CustomBoxCollider> ());
@@ -144,10 +159,8 @@ public abstract class SpawningSystem <T>: MonoBehaviour
 		if (newGrid == null) {
 			return;
 		}
-		
-		var currentGrid = instance.GridCoordinate;
 
-		RemoveVehicle (currentGrid, instance);
+		RemoveVehicle (instance);
 
 		RegisterVehicle (newGrid, instance);
 	}
@@ -245,6 +258,9 @@ public abstract class SpawningSystem <T>: MonoBehaviour
 				var instanceSet = InstanceMap [coord];
 
 				foreach (var instance in instanceSet) {
+					if (instance == null) {
+						continue;
+					}
 					var diffVector = instance.transform.position - inst.transform.position;
 
 					float distanceSquared = diffVector.sqrMagnitude;

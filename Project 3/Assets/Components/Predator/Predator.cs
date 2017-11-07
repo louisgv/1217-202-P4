@@ -15,6 +15,8 @@ public class Predator : SmartBoundedVehicle<PredatorCollider, Predator>
 
 	private Transform seekingTarget;
 
+	private Prey targetPrey;
+
 	/// <summary>
 	/// Gets or sets the prey system instance.
 	/// </summary>
@@ -37,7 +39,7 @@ public class Predator : SmartBoundedVehicle<PredatorCollider, Predator>
 		if (seekingTarget == null) {
 			totalForce += SteeringForce.GetWanderingForce (this) * wanderingParams.ForceScale;
 		} else {
-			var targetPrey = seekingTarget.GetComponent <Prey> ();
+			targetPrey = seekingTarget.GetComponent <Prey> ();
 			totalForce += GetPursuingForce (targetPrey) * seekingParams.ForceScale;
 		}
 
@@ -65,14 +67,13 @@ public class Predator : SmartBoundedVehicle<PredatorCollider, Predator>
 
 		base.OnRenderObject ();
 
-		DrawDebugMark (FuturePosition, Color.red);
-
 		if (seekingTarget != null) {
 			// Draw line to seeking target
 			DrawDebugLine (seekingTarget.position, seekingLineColor);
+
+			targetPrey.DrawFutureMarker (Color.magenta);
 		}
 
 		GL.PopMatrix ();
-
 	}
 }

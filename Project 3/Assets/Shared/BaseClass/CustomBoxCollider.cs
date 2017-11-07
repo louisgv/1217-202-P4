@@ -15,14 +15,6 @@ public abstract class CustomBoxCollider : MonoBehaviour
 	[SerializeField]
 	protected Vector3 size;
 
-	protected bool isColliding = false;
-
-	public bool IsColliding {
-		get {
-			return isColliding;
-		}
-	}
-
 	/// <summary>
 	/// Gets the center.
 	/// </summary>
@@ -120,13 +112,30 @@ public abstract class CustomBoxCollider : MonoBehaviour
 		return size / 2f;
 	}
 
-	/// <summary>
-	/// Awake this instance.
-	/// </summary>
+	#region Unity Lifecycle
+
 	protected virtual void Awake ()
 	{
 
 	}
+
+	protected virtual void Start ()
+	{
+
+	}
+
+	protected virtual void Update ()
+	{
+		
+	}
+
+	protected virtual void LateUpdate ()
+	{
+		
+	}
+
+	#endregion
+
 
 	/// <summary>
 	/// Raises the draw gizmos event.
@@ -134,10 +143,6 @@ public abstract class CustomBoxCollider : MonoBehaviour
 	protected virtual void OnDrawGizmos ()
 	{
 		Gizmos.color = Color.black;
-
-		if (isColliding) {
-			Gizmos.color = Color.red;
-		}
 
 		Gizmos.DrawWireCube (WorldCenter, size);
 	}

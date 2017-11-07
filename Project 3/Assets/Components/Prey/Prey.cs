@@ -15,6 +15,8 @@ public class Prey : SmartBoundedVehicle<PreyCollider, Prey>
 	private Color fleeingLineColor = Color.white;
 
 	private List<Transform> fleeingTargets;
+	private HashSet<Predator> targetPredators;
+
 
 	/// <summary>
 	/// Gets or sets the target predator system.
@@ -22,7 +24,19 @@ public class Prey : SmartBoundedVehicle<PreyCollider, Prey>
 	/// <value>The target predator system.</value>
 	public PredatorSystem TargetPredatorSystem { get; set; }
 
+	private PreyCollider preyCollider;
+
 	#region implemented abstract members of Vehicle
+
+	/// <summary>
+	/// Awake this instance.
+	/// </summary>
+	protected override void Awake ()
+	{
+		base.Awake ();
+		preyCollider = GetComponent <PreyCollider> ();
+		targetPredators = new HashSet<Predator> ();
+	}
 
 	/// <summary>
 	/// Gets the steering force.
@@ -63,13 +77,28 @@ public class Prey : SmartBoundedVehicle<PreyCollider, Prey>
 			return totalForce;
 		}
 
-		foreach (var fleeingTarget in fleeingTargets) {
-			var targetPredator = fleeingTarget.GetComponent <Predator> ();
+		var isColliding = preyCollider.CheckPredatorCollision (fleeingTargets);
 
-			var fleeingForce = GetEvadingForce (targetPredator);
+		if (!isColliding) {
+			targetPredators.Clear ();
+			foreach (var fleeingTarget in fleeingTargets) {
+				var targetPredator = fleeingTarget.GetComponent <Predator> ();
+				
+				var fleeingForce = GetEvadingForce (targetPredator);
+				
+				totalForce += fleeingForce;
 
-			totalForce += fleeingForce;
+				targetPredators.Add (targetPredator);
+			}
+		} else {
+			ParentSystem.RemoveVehicle (this);
+
+			TargetPredatorSystem.SpawnEntityAbovePlane (transform.position);
+
+			Destroy (gameObject);
 		}
+		// Remove self from parent system
+		// Add a new predator to Predator system
 
 		return totalForce;
 	}
@@ -85,11 +114,13 @@ public class Prey : SmartBoundedVehicle<PreyCollider, Prey>
 
 		base.OnRenderObject ();
 
-		DrawDebugMark (FuturePosition, Color.magenta);
-
 		if (fleeingTargets != null) {
 			foreach (var fleeingTarget in fleeingTargets) {
 				DrawDebugLine (fleeingTarget.position, fleeingLineColor);
+			}
+
+			foreach (var targetPredator in targetPredators) {
+				targetPredator.DrawFutureMarker (Color.red);
 			}
 		}
 
