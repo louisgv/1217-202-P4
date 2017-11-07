@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 /// <summary>
 /// Author: LAB <lab@mail.rit.edu>
@@ -14,6 +15,7 @@ public class CameraManager : MonoBehaviour
 
 	public SmoothFollow SmoothCamera;
 
+	public Transform FollowingRef { get; set; }
 
 	/// <summary>
 	/// Initialize current index, disable all camera except the first
@@ -40,6 +42,11 @@ public class CameraManager : MonoBehaviour
 	/// </summary>
 	public void SetSmoothCamera (Transform target)
 	{
+		if (FollowingRef == target) {
+			SetOverallCamera ();
+		}
+		FollowingRef = target;
+
 		SmoothCamera.target = target;
 
 		foreach (Transform child in transform) {
@@ -59,8 +66,16 @@ public class CameraManager : MonoBehaviour
 			SetOverallCamera ();
 		}
 
+		if (!FollowingRef || !FollowingRef.gameObject) {
+			SetOverallCamera ();
+		}
+
 		if (Input.GetKeyDown (KeyCode.D)) {
 			Vehicle.debugLine = !Vehicle.debugLine;
+		}
+
+		if (Input.GetKeyDown (KeyCode.R)) {
+			SceneManager.LoadScene (SceneManager.GetActiveScene ().name);
 		}
 	}
 

@@ -15,7 +15,7 @@ public class PredatorCollider : CustomBoxCollider
 
 	private Vector3 hoverScale;
 
-	private float hoverScaleFactor = 2f;
+	private float hoverScaleFactor = 4f;
 
 	/// <summary>
 	/// Awake this instance.
@@ -44,9 +44,15 @@ public class PredatorCollider : CustomBoxCollider
 	/// </summary>
 	private void OnMouseOver ()
 	{
+		if (cameraManager.FollowingRef != null) {
+			return;
+		}
 		transform.localScale = hoverScale;
 	}
 
+	/// <summary>
+	/// Scale the transform back 
+	/// </summary>
 	private void OnMouseExit ()
 	{
 		transform.localScale = originalScale;
