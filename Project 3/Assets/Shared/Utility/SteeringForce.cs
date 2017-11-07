@@ -8,8 +8,7 @@ using UnityEngine;
 public enum SteeringMode
 {
 	SEEKING,
-	FLEEING,
-	AVOIDANCE
+	FLEEING
 }
 
 /// <summary>
@@ -24,8 +23,7 @@ public static class SteeringForce
 
 	internal static SteeringFx[] steeringFunctions = {
 		GetSeekingForce,
-		GetFleeingForce,
-		GetAvoidanceForce
+		GetFleeingForce
 	};
 
 	/// <summary>
@@ -166,7 +164,7 @@ public static class SteeringForce
 	/// </summary>
 	/// <returns>The evasion force.</returns>
 	/// <param name="target">Target.</param>
-	internal static Vector3 GetAvoidanceForce (Vehicle vehicle, Vector3 target)
+	internal static Vector3 GetAvoidanceForce (Vehicle vehicle, float radiDistance, Vector3 target)
 	{
 		var diff = target - vehicle.transform.position;
 
@@ -177,6 +175,10 @@ public static class SteeringForce
 		}
 
 		var rightProjection = Vector3.Dot (diff, vehicle.transform.right);
+
+		if (rightProjection > radiDistance) {
+			return Vector3.zero;
+		}
 
 		var desiredDirection = (rightProjection > 0
 		                       // Object to the right, turn left
@@ -193,12 +195,16 @@ public static class SteeringForce
 	/// Gets the obstacle avoidance force.
 	/// </summary>
 	/// <returns>The obstacle avoidance force.</returns>
-	internal static Vector3 GetObstacleAvoidanceForce (Vehicle vehicle, List<Transform> nearbyObstacles)
+	internal static Vector3 GetObstacleAvoidanceForce (Vehicle vehicle, float vehicleRadi, List<Transform> nearbyObstacles)
 	{
 		var totalForce = Vector3.zero;
 
 		foreach (var obstacle in nearbyObstacles) {
-			totalForce += GetAvoidanceForce (vehicle, obstacle.position);
+			float obstacleRadi = obstacle.GetComponent <ObstacleCollider> ().Size.x;
+
+			float radiDistance = vehicleRadi + obstacleRadi;
+
+			totalForce += GetAvoidanceForce (vehicle, radiDistance, obstacle.position);
 		}
 
 		return totalForce;

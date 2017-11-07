@@ -19,6 +19,7 @@ abstract public class SmartBoundedVehicle <C, V>: BoundedVehicle
 	[SerializeField]
 	public SteeringParams separationParams;
 
+	// This param includes the safe distance
 	[SerializeField]
 	public SteeringParams avoidingParams;
 
@@ -76,7 +77,7 @@ abstract public class SmartBoundedVehicle <C, V>: BoundedVehicle
 	{
 		var nearbyObstacles = TargetObstacleSystem.FindCloseProximityInstances (this, avoidingParams.ThresholdSquared);
 
-		return SteeringForce.GetObstacleAvoidanceForce (this, nearbyObstacles);
+		return SteeringForce.GetObstacleAvoidanceForce (this, ColliderInstance.Size.x, nearbyObstacles);
 	}
 
 	/// <summary>
