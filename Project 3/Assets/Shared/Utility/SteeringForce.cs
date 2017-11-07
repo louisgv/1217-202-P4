@@ -144,7 +144,7 @@ public static class SteeringForce
 			desiredVelocity = new Vector3 (-maxSteeringSpeed, 0, vehicle.Velocity.z);
 		} else if (vehicleX < minBound.x) {
 			desiredVelocity = new Vector3 (maxSteeringSpeed, 0, vehicle.Velocity.z);
-		} 
+		}
 
 		if (vehicleZ > maxBound.z) {
 			desiredVelocity = new Vector3 (vehicle.Velocity.x, 0, -maxSteeringSpeed);

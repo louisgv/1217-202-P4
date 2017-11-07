@@ -10,7 +10,7 @@ using System;
 /// </summary>
 public abstract class Vehicle : SpawningGridComponent
 {
-	private static bool debugLine = true;
+	public static bool debugLine = true;
 	
 	[SerializeField]
 	private float mass = 1.0f;
@@ -156,10 +156,6 @@ public abstract class Vehicle : SpawningGridComponent
 
 	protected virtual void Update ()
 	{
-		if (Input.GetKeyDown (KeyCode.D)) {
-			debugLine = !debugLine;
-		}
-
 		ApplyForce (GetTotalSteeringForce ());
 	}
 

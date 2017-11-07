@@ -58,6 +58,10 @@ public class CameraManager : MonoBehaviour
 		if (cKeyDown) {
 			SetOverallCamera ();
 		}
+
+		if (Input.GetKeyDown (KeyCode.D)) {
+			Vehicle.debugLine = !Vehicle.debugLine;
+		}
 	}
 
 }
