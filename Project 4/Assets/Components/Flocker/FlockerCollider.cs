@@ -10,6 +10,6 @@ using UnityEngine;
 /// </summary>
 public class FlockerCollider : CustomBoxCollider
 {
-
+	
 
 }

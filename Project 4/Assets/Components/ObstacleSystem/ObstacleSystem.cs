@@ -20,6 +20,8 @@ public class ObstacleSystem : SpawningSystem <Obstacle>
 	{
 		var instance = Instantiate (prefab, pos, Quaternion.identity, transform);
 
+		instance.BoundingPlane = plane;
+
 		RegisterVehicle (instance);
 	}
 
@@ -43,7 +45,7 @@ public class ObstacleSystem : SpawningSystem <Obstacle>
 			for (int z = 0; z < zCount; z++) {
 				var spawnPos = minBound + new Vector3 (x * xStep, 0, z * zStep) + initialPos;
 				
-				SpawnEntityAbovePlane (spawnPos);
+				SpawnEntity (spawnPos);
 			}
 		}
 	}

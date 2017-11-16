@@ -13,6 +13,12 @@ public class Flocker : SmartBoundedVehicle<Flocker, FlockerCollider, FlockerSyst
 {
 	public Material glLineMaterial;
 
+	private Vector3 totalForce;
+
+	// This param includes the safe distance
+	[SerializeField]
+	public SteeringParams alignParams;
+
 	#region implemented abstract members of Vehicle
 
 	/// <summary>
@@ -21,7 +27,7 @@ public class Flocker : SmartBoundedVehicle<Flocker, FlockerCollider, FlockerSyst
 	/// <returns>The total steering force.</returns>
 	protected override Vector3 GetTotalSteeringForce ()
 	{
-		var totalForce = Vector3.zero;
+		totalForce = Vector3.zero;
 
 		totalForce += SteeringForce.GetWanderingForce (this) * wanderingParams.ForceScale;
 
@@ -37,6 +43,20 @@ public class Flocker : SmartBoundedVehicle<Flocker, FlockerCollider, FlockerSyst
 	}
 
 	#endregion
+
+
+	/// <summary>
+	/// Gets the total neighbor separation force.
+	/// </summary>
+	/// <returns>The total neighbor separation force.</returns>
+	protected Vector3 GetTotalNeighborAlignmentForce ()
+	{
+		return SteeringForce.GetSeekingForce (this, 
+			ParentSystem.FlockAveragePositionMap [GridCoordinate]);
+		//		var nearbyNeighbors = ParentSystem.FindCloseProximityInstances (this, alignParams.);
+
+		//		return SteeringForce.GetNeighborSeparationForce (this, nearbyNeighbors);
+	}
 
 	protected override void Awake ()
 	{

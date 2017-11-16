@@ -14,6 +14,15 @@ public class FlockerSystem : SpawningSystem <Flocker>
 	[SerializeField]
 	private ObstacleSystem targetObstacleSystem;
 
+	/// <summary>
+	/// Gets the instance map.
+	/// </summary>
+	/// <value>The instance map.</value>
+	public Dictionary <SpawningGridCoordinate, Vector3> FlockAveragePositionMap {
+		get;
+		private set;
+	}
+
 	#region implemented abstract members of SpawningSystem
 
 	public override void SpawnEntity (Vector3 pos)
@@ -30,4 +39,26 @@ public class FlockerSystem : SpawningSystem <Flocker>
 	}
 
 	#endregion
+
+	/// <summary>
+	/// Refreshs the flocker average position map.
+	/// </summary>
+	private void RefreshFlockAveragePositionMap ()
+	{
+		foreach (var item in InstanceMap) {
+			
+		}
+	}
+
+	protected override void Awake ()
+	{
+		base.Awake ();
+		FlockAveragePositionMap = new Dictionary<SpawningGridCoordinate, Vector3> ();
+	}
+
+	protected override void Update ()
+	{
+		base.Update ();
+		RefreshFlockAveragePositionMap ();
+	}
 }

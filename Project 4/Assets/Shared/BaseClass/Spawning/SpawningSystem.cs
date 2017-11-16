@@ -207,6 +207,11 @@ public abstract class SpawningSystem <T>: MonoBehaviour
 				var instanceSet = InstanceMap [coord];
 
 				foreach (var instance in instanceSet) {
+					// Skip itself
+					if (instance == inst) {
+						continue;
+					}
+
 					targets.Add (instance);
 				}
 			}
@@ -216,7 +221,7 @@ public abstract class SpawningSystem <T>: MonoBehaviour
 	}
 
 	/// <summary>
-	/// Finds the a list of Transform surrounding a certain position.
+	/// Finds a list of Transform surrounding a certain position.
 	/// </summary>
 	/// <returns>The nearest instance.</returns>
 	/// <param name="pos">Position.</param>
@@ -247,14 +252,26 @@ public abstract class SpawningSystem <T>: MonoBehaviour
 				var instanceSet = InstanceMap [coord];
 
 				foreach (var instance in instanceSet) {
+					// Skip itself
+					if (instance == inst) {
+						continue;
+					}
+
 					var diffVector = instance.transform.position - inst.transform.position;
+
+					diffVector.y = 0;
 					
-					float distanceSquared = Vector3.Dot (diffVector, diffVector);
-					
+					float distanceSquared = diffVector.sqrMagnitude;
+
 					if (minDistanceSquared > distanceSquared) {
 						targets.Add (instance.transform);
 					}
 				}
+			}
+			// If we found a potential target within an inner level,
+			// then we don't have to check the outer level
+			if (targets.Count > 0) {
+				break;
 			}
 		}
 
@@ -296,6 +313,9 @@ public abstract class SpawningSystem <T>: MonoBehaviour
 						continue;
 					}
 					var diffVector = instance.transform.position - inst.transform.position;
+
+					// HACK: 2D position for now
+					diffVector.y = 0;
 
 					float distanceSquared = diffVector.sqrMagnitude;
 

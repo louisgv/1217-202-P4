@@ -223,7 +223,7 @@ public static class SteeringForce
 			sum += (vehicle.transform.position - neighbor.transform.position).normalized;
 		}
 
-		var desiredVelocity = sum * vehicle.MaxSteeringSpeed / nearbyNeighbors.Count;
+		var desiredVelocity = sum * vehicle.MaxSteeringSpeed / (float)nearbyNeighbors.Count;
 
 		return SteeringForce.GetSteeringForce (vehicle, desiredVelocity);
 	}
