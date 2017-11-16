@@ -34,6 +34,8 @@ public class CameraManager : MonoBehaviour
 			child.gameObject.SetActive (false);
 		}
 
+		FollowingRef = null;
+
 		OverallCamera.gameObject.SetActive (true);
 	}
 

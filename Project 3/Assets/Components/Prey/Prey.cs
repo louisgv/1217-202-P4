@@ -8,7 +8,7 @@ using UnityEngine;
 /// If of close proximity to a predator: Run away
 /// Attached to: Prey, Human
 /// </summary>
-public class Prey : SmartBoundedVehicle<PreyCollider, Prey>
+public class Prey : SmartBoundedVehicle<Prey, PreyCollider, PreySystem>
 {
 	public Material glLineMaterial;
 

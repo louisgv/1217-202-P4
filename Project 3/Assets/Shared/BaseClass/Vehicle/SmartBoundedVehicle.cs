@@ -9,12 +9,14 @@ using UnityEngine;
 /// and it is awared of the plane it can walk on
 /// It is also smart because it know to pursue or evade instead
 /// of normal seek/flee
+/// It also explode upon destroyed
 /// Author: LAB
 /// </summary>
 [RequireComponent (typeof(C))]
-abstract public class SmartBoundedVehicle <C, V>: BoundedVehicle 
-	where C : CustomBoxCollider 
+abstract public class SmartBoundedVehicle <V, C, S>: BoundedVehicle 
 	where V: Vehicle // it's acyclic so it's fine
+	where C : CustomBoxCollider 
+	where S : SpawningSystem<V>  // Wow, dangerous teritory here
 {
 	[SerializeField]
 	public SteeringParams separationParams;
@@ -23,11 +25,14 @@ abstract public class SmartBoundedVehicle <C, V>: BoundedVehicle
 	[SerializeField]
 	public SteeringParams avoidingParams;
 
+	[SerializeField]
+	private GameObject explosionPrefab;
+
 	/// <summary>
 	/// Gets or sets the parent system.
 	/// </summary>
 	/// <value>The parent system.</value>
-	public SpawningSystem<V> ParentSystem { get; set; }
+	public S ParentSystem { get; set; }
 
 	/// <summary>
 	/// Gets or sets the target obstacle system.
@@ -41,6 +46,8 @@ abstract public class SmartBoundedVehicle <C, V>: BoundedVehicle
 	/// <value>The collider instance.</value>
 	public C ColliderInstance { get ; set ; }
 
+	private float maxPredictionTimeSquared = 9f;
+
 	#region Unity Lifecycle
 
 	protected override void Awake ()
@@ -50,6 +57,14 @@ abstract public class SmartBoundedVehicle <C, V>: BoundedVehicle
 
 	#endregion
 
+	/// <summary>
+	/// Explode this instance.
+	/// </summary>
+	public void Explode ()
+	{
+		var explosionInstance = Instantiate (explosionPrefab, transform.position, Quaternion.identity);
+		Destroy (explosionInstance, 1.8f);
+	}
 
 	protected override void Reset ()
 	{
@@ -91,7 +106,9 @@ abstract public class SmartBoundedVehicle <C, V>: BoundedVehicle
 
 		var distanceSquared = diff.sqrMagnitude;
 		// this will cramp naturally as the diff get smaller 
-		float predictionTimeSquared = distanceSquared / MaxSteeringSpeedSquared;
+		float predictionTimeSquared = Mathf.Min (
+			                              distanceSquared / MaxSteeringSpeedSquared, 
+			                              maxPredictionTimeSquared);
 
 		return target.transform.position + target.Velocity * Mathf.Sqrt (predictionTimeSquared);
 	}

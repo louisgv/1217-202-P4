@@ -9,4 +9,6 @@ public static class Tag
 	public static string CAMERA_MANAGER = "CameraManager";
 
 	public static string SMOOTH_CAMERA = "SmoothCamera";
+
+	public static string SCORE_TRACKER = "ScoreTracker";
 }

@@ -16,17 +16,31 @@ public class PouchTerrain : MonoBehaviour
 	[SerializeField]
 	int resolution = 100;
 
+	[SerializeField]
+	int offset = 9;
+
 	public Vector3 worldSize = new Vector3 (100, 100, 100);
 
 	Terrain terrain;
 
 	TerrainData terrainData;
 
+	public float scale = 4.5f;
+
+	private float xOrigin;
+
+	private float yOrigin;
+
+
 	/// <summary>
 	/// Initialize the terrain and its height map
 	/// </summary>
 	private void Awake ()
 	{
+		xOrigin = Random.value * resolution;
+
+		yOrigin = Random.value * resolution;
+
 		terrain = GetComponent <Terrain> ();
 
 		terrainData = terrain.terrainData;
@@ -39,7 +53,12 @@ public class PouchTerrain : MonoBehaviour
 
 		for (int i = 0; i < resolution; i++) {
 			for (int j = 0; j < resolution; j++) {
-				heightmap [i, j] = CalculateHeight (i, j, resolution);
+				if ((i > offset && j > offset) &&
+				    (i < resolution - offset && j < resolution - offset)) {
+					heightmap [i, j] = GetPerlinHeight (i, j, resolution);
+				} else {
+					heightmap [i, j] = CalculateHeight (i, j, resolution);
+				}
 			}
 		}
 
@@ -47,6 +66,22 @@ public class PouchTerrain : MonoBehaviour
 
 		terrain.terrainData = terrainData;
 
+	}
+
+	/// <summary>
+	/// Gets the height using perlin noise.
+	/// </summary>
+	/// <returns>The perlin height.</returns>
+	/// <param name="x">The x coordinate.</param>
+	/// <param name="y">The y coordinate.</param>
+	/// <param name="res">Res.</param>
+	private float GetPerlinHeight (int x, int y, int res)
+	{
+		float xCoord = xOrigin + ScaleRamp (x, res) * scale;
+
+		float yCoord = yOrigin + ScaleRamp (y, res) * scale;
+
+		return Mathf.PerlinNoise (xCoord, yCoord);
 	}
 
 	/// <summary>

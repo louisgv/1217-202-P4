@@ -7,7 +7,7 @@ using UnityEngine;
 /// Default: Seeking and pursuing the closest Prey
 /// Attached to: Predator, Zombie
 /// </summary>
-public class Predator : SmartBoundedVehicle<PredatorCollider, Predator>
+public class Predator : SmartBoundedVehicle<Predator, PredatorCollider, PredatorSystem>
 {
 	public Material glLineMaterial;
 

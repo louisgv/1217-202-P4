@@ -180,6 +180,41 @@ public abstract class SpawningSystem <T>: MonoBehaviour
 
 	#endregion
 
+	public List<T> FindCloseProximityInstances (
+		SpawningGridComponent inst,
+		int maxLevel
+	)
+	{
+		if (InstanceMap == null || InstanceMap.Count == 0) {
+			return null;
+		}
+
+		// TODO: Add a delegate parameter here so we can define and reuse the same for loop instead
+		var targets = new List<T> ();
+
+		for (int level = 0; level <= maxLevel; level++) {
+			var adjacentCoords = inst.GridCoordinate.GetAdjacentGrids (level);
+
+			if (adjacentCoords == null) {
+				continue;
+			}
+
+			foreach (var coord in adjacentCoords) {
+				if (!InstanceMap.ContainsKey (coord)) {
+					continue;
+				}
+
+				var instanceSet = InstanceMap [coord];
+
+				foreach (var instance in instanceSet) {
+					targets.Add (instance);
+				}
+			}
+		}
+
+		return targets;
+	}
+
 	/// <summary>
 	/// Finds the a list of Transform surrounding a certain position.
 	/// </summary>
