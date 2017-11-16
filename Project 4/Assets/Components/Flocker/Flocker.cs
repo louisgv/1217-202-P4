@@ -49,6 +49,13 @@ public class Flocker : SmartBoundedVehicle<Flocker, FlockerCollider, FlockerSyst
 		// Grab the direction from the system here
 	}
 
+	protected override void LateUpdate ()
+	{
+		base.LateUpdate ();
+
+		transform.position = BoundingPlane.GetSampledPosition (transform.position, ColliderInstance);
+	}
+
 
 	/// <summary>
 	/// Draw debug line to current target

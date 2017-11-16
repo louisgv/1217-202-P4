@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Runtime.InteropServices;
 
 /// <summary>
 /// Cube plane collider.
@@ -17,8 +18,7 @@ public class CubePlaneCollider : CustomBoxCollider
 	/// <param name="col">Col.</param>
 	public Vector3 GetSampledPosition (Vector3 pos, CustomBoxCollider col)
 	{
-		pos.y = WorldCenter.y;
-		return pos + (col.Size.y + Size.y) / 2 * Vector3.up;
+		return TerrainHeightUtils.AddOnSample (pos, col.Size.y / 2f);
 	}
 
 	/// <summary>
@@ -43,4 +43,6 @@ public class CubePlaneCollider : CustomBoxCollider
 	{
 		return GetSampledPosition (GetRandomPositionXZ (), col);
 	}
+
+
 }

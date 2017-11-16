@@ -20,6 +20,8 @@ public class ObstacleSystem : SpawningSystem <Obstacle>
 	{
 		var instance = Instantiate (prefab, pos, Quaternion.identity, transform);
 
+		instance.BoundingPlane = plane;
+
 		RegisterVehicle (instance);
 	}
 
@@ -37,14 +39,13 @@ public class ObstacleSystem : SpawningSystem <Obstacle>
 		float xStep = plane.Size.x / xCount;
 		float zStep = plane.Size.z / zCount;
 
-		var initialPos = new Vector3 (xStep, prefabCollider.Size.y, zStep) / 2f
-		                 + plane.Size.y * Vector3.up;
+		var initialPos = new Vector3 (xStep, 0, zStep) / 2f;
 
 		for (int x = 0; x < xCount; x++) {
 			for (int z = 0; z < zCount; z++) {
 				var spawnPos = minBound + new Vector3 (x * xStep, 0, z * zStep) + initialPos;
 				
-				SpawnEntity (spawnPos);
+				SpawnEntityAbovePlane (spawnPos);
 			}
 		}
 	}
