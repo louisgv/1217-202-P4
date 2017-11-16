@@ -19,6 +19,9 @@ public class Flocker : SmartBoundedVehicle<Flocker, FlockerCollider, FlockerSyst
 	[SerializeField]
 	public SteeringParams alignParams;
 
+	[SerializeField]
+	public SteeringParams cohesionParams;
+
 	#region implemented abstract members of Vehicle
 
 	/// <summary>
@@ -35,6 +38,10 @@ public class Flocker : SmartBoundedVehicle<Flocker, FlockerCollider, FlockerSyst
 
 		totalForce += GetTotalNeighborSeparationForce () * separationParams.ForceScale;
 
+		totalForce += GetTotalNeighborAlignmentForce () * alignParams.ForceScale;
+
+		totalForce += GetTotalNeighborCohesionForce () * cohesionParams.ForceScale;
+
 		totalForce += GetBoundingForce () * boundingParams.ForceScale;
 
 		totalForce.y = 0;
@@ -46,16 +53,21 @@ public class Flocker : SmartBoundedVehicle<Flocker, FlockerCollider, FlockerSyst
 
 
 	/// <summary>
-	/// Gets the total neighbor separation force.
+	/// Gets the total neighbor alignment force.
 	/// </summary>
-	/// <returns>The total neighbor separation force.</returns>
+	/// <returns>The total neighbor alignment force.</returns>
 	protected Vector3 GetTotalNeighborAlignmentForce ()
 	{
-		return SteeringForce.GetSeekingForce (this, 
-			ParentSystem.FlockAveragePositionMap [GridCoordinate]);
-		//		var nearbyNeighbors = ParentSystem.FindCloseProximityInstances (this, alignParams.);
+		return SteeringForce.GetSteeringForce (this, ParentSystem.FlockAverageVelocityMap [GridCoordinate]);
+	}
 
-		//		return SteeringForce.GetNeighborSeparationForce (this, nearbyNeighbors);
+	/// <summary>
+	/// Gets the total neighbor cohesion force.
+	/// </summary>
+	/// <returns>The total neighbor cohesion force.</returns>
+	protected Vector3 GetTotalNeighborCohesionForce ()
+	{
+		return SteeringForce.GetSeekingForce (this, ParentSystem.FlockAveragePositionMap [GridCoordinate]);
 	}
 
 	protected override void Awake ()

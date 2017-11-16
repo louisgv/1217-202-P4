@@ -18,6 +18,15 @@ public class FlockerSystem : SpawningSystem <Flocker>
 	/// Gets the instance map.
 	/// </summary>
 	/// <value>The instance map.</value>
+	public Dictionary <SpawningGridCoordinate, Vector3> FlockAverageVelocityMap {
+		get;
+		private set;
+	}
+
+	/// <summary>
+	/// Gets the flock average position map.
+	/// </summary>
+	/// <value>The flock average position map.</value>
 	public Dictionary <SpawningGridCoordinate, Vector3> FlockAveragePositionMap {
 		get;
 		private set;
@@ -43,22 +52,48 @@ public class FlockerSystem : SpawningSystem <Flocker>
 	/// <summary>
 	/// Refreshs the flocker average position map.
 	/// </summary>
-	private void RefreshFlockAveragePositionMap ()
+	private void RefreshFlockAverageDataMap ()
 	{
+		
 		foreach (var item in InstanceMap) {
-			
+			var instanceSet = item.Value;
+
+			if (instanceSet == null || instanceSet.Count == 0) {
+				FlockAverageVelocityMap [item.Key] = Vector3.zero;
+				FlockAveragePositionMap [item.Key] = Vector3.zero;
+				continue;
+			}
+
+			var positionSum = Vector3.zero;
+			var velocitySum = Vector3.zero;
+
+			float maxSpeed = 0;
+
+			foreach (var instance in instanceSet) {
+				if (maxSpeed < instance.MaxSteeringSpeed) {
+					maxSpeed = instance.MaxSteeringSpeed;
+				}
+
+				positionSum += instance.transform.position;
+				velocitySum += instance.Velocity;
+			}
+
+			var avgVelocity = velocitySum / instanceSet.Count;
+
+			FlockAverageVelocityMap [item.Key] = avgVelocity.normalized * maxSpeed;
+			FlockAveragePositionMap [item.Key] = positionSum / instanceSet.Count;
 		}
 	}
 
 	protected override void Awake ()
 	{
 		base.Awake ();
-		FlockAveragePositionMap = new Dictionary<SpawningGridCoordinate, Vector3> ();
+		FlockAverageVelocityMap = new Dictionary<SpawningGridCoordinate, Vector3> ();
 	}
 
 	protected override void Update ()
 	{
 		base.Update ();
-		RefreshFlockAveragePositionMap ();
+		RefreshFlockAverageDataMap ();
 	}
 }
