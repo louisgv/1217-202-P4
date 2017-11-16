@@ -18,6 +18,9 @@ public abstract class Vehicle : SpawningGridComponent
 	[SerializeField, Range (0, 10f)]
 	protected float maxForce = 5.0f;
 
+	[SerializeField, Range (0, 20f)]
+	protected float maxSpeed = 10.0f;
+
 	/// <summary>
 	/// The max fleeing velocity.
 	/// </summary>
@@ -118,6 +121,8 @@ public abstract class Vehicle : SpawningGridComponent
 	protected void Move ()
 	{
 		Velocity += acceleration * Time.deltaTime;
+
+		Velocity = Vector3.ClampMagnitude (Velocity, maxSpeed);
 
 		Direction = Velocity.normalized;
 

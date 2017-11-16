@@ -64,10 +64,11 @@ public class FlockerSystem : SpawningSystem <Flocker>
 				continue;
 			}
 
+			float maxSpeed = 0;
+	
 			var positionSum = Vector3.zero;
 			var velocitySum = Vector3.zero;
 
-			float maxSpeed = 0;
 
 			foreach (var instance in instanceSet) {
 				if (maxSpeed < instance.MaxSteeringSpeed) {
@@ -82,6 +83,7 @@ public class FlockerSystem : SpawningSystem <Flocker>
 
 			FlockAverageVelocityMap [item.Key] = avgVelocity.normalized * maxSpeed;
 			FlockAveragePositionMap [item.Key] = positionSum / instanceSet.Count;
+
 		}
 	}
 
@@ -89,6 +91,7 @@ public class FlockerSystem : SpawningSystem <Flocker>
 	{
 		base.Awake ();
 		FlockAverageVelocityMap = new Dictionary<SpawningGridCoordinate, Vector3> ();
+		FlockAveragePositionMap = new Dictionary<SpawningGridCoordinate, Vector3> ();
 	}
 
 	protected override void Update ()

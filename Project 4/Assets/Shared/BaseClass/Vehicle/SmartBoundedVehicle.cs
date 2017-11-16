@@ -81,6 +81,10 @@ abstract public class SmartBoundedVehicle <V, C, S>: BoundedVehicle
 	{
 		var nearbyNeighbors = ParentSystem.FindCloseProximityInstances (this, ColliderInstance.ExtendSquared);
 
+		if (nearbyNeighbors.Count == 0) {
+			return Vector3.zero;
+		}
+
 		return SteeringForce.GetNeighborSeparationForce (this, nearbyNeighbors);
 	}
 
@@ -91,6 +95,10 @@ abstract public class SmartBoundedVehicle <V, C, S>: BoundedVehicle
 	protected Vector3 GetTotalObstacleAvoidanceForce ()
 	{
 		var nearbyObstacles = TargetObstacleSystem.FindCloseProximityInstances (this, avoidingParams.ThresholdSquared);
+
+		if (nearbyObstacles.Count == 0) {
+			return Vector3.zero;
+		}
 
 		return SteeringForce.GetObstacleAvoidanceForce (this, ColliderInstance.Size.x, nearbyObstacles);
 	}

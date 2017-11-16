@@ -237,6 +237,8 @@ public abstract class SpawningSystem <T>: MonoBehaviour
 		// TODO: Add a delegate parameter here so we can define and reuse the same for loop instead
 		var targets = new List<Transform> ();
 
+		bool thresholdSurpassed = false;
+
 		for (int level = 0; level <= inst.GridCoordinate.MaxTracingLevel; level++) {
 			var adjacentCoords = inst.GridCoordinate.GetAdjacentGrids (level);
 
@@ -265,16 +267,18 @@ public abstract class SpawningSystem <T>: MonoBehaviour
 
 					if (minDistanceSquared > distanceSquared) {
 						targets.Add (instance.transform);
+					} else {
+						thresholdSurpassed = true;
 					}
 				}
 			}
 			// If we found a potential target within an inner level,
+			// or none of the element closeby are within the dangerous zone
 			// then we don't have to check the outer level
-			if (targets.Count > 0) {
+			if (targets.Count > 0 || thresholdSurpassed) {
 				break;
 			}
 		}
-
 		return targets;
 	}
 
