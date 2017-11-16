@@ -19,8 +19,4 @@ public class FlockerSystem : SpawningSystem <Flocker>
 	}
 
 	#endregion
-
-
-
-
 }
