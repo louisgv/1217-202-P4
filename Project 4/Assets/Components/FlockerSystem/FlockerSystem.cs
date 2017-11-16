@@ -11,11 +11,22 @@ using UnityEngine;
 /// </summary>
 public class FlockerSystem : SpawningSystem <Flocker>
 {
+	[SerializeField]
+	private ObstacleSystem targetObstacleSystem;
+
 	#region implemented abstract members of SpawningSystem
 
 	public override void SpawnEntity (Vector3 pos)
 	{
-		throw new System.NotImplementedException ();
+		var flockerInstance = Instantiate (prefab, pos, Quaternion.identity, transform);
+
+		flockerInstance.ParentSystem = this;
+
+		flockerInstance.TargetObstacleSystem = targetObstacleSystem;
+
+		flockerInstance.BoundingPlane = plane;
+
+		RegisterVehicle (flockerInstance);
 	}
 
 	#endregion

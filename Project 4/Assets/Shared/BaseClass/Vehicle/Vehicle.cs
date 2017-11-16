@@ -122,6 +122,8 @@ public abstract class Vehicle : SpawningGridComponent
 		Direction = Velocity.normalized;
 
 		transform.position += Velocity * Time.deltaTime;
+
+		transform.position = TerrainHeightUtils.ApplySample (transform.position);
 	}
 
 	/// <summary>

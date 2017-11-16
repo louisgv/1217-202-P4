@@ -11,4 +11,6 @@ public static class Tag
 	public static string SMOOTH_CAMERA = "SmoothCamera";
 
 	public static string SCORE_TRACKER = "ScoreTracker";
+
+	public static string PRIME_TERRAIN = "PrimeTerrain";
 }

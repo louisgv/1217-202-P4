@@ -4,15 +4,36 @@ using UnityEngine;
 
 /// <summary>
 /// Flocker.
-/// A flocker's movement is heavily depended on the Flocker System it belongs to
+/// A flocker's movement is heavily influenced by 
+/// the Flocker System it belongs to
+/// Author: LAB
+/// Attached to: Flocker
 /// </summary>
 public class Flocker : SmartBoundedVehicle<Flocker, FlockerCollider, FlockerSystem>
 {
+	public Material glLineMaterial;
+
 	#region implemented abstract members of Vehicle
 
+	/// <summary>
+	/// Gets the steering force.
+	/// </summary>
+	/// <returns>The total steering force.</returns>
 	protected override Vector3 GetTotalSteeringForce ()
 	{
-		throw new System.NotImplementedException ();
+		var totalForce = Vector3.zero;
+
+		totalForce += SteeringForce.GetWanderingForce (this) * wanderingParams.ForceScale;
+
+		totalForce += GetTotalObstacleAvoidanceForce () * avoidingParams.ForceScale;
+
+		totalForce += GetTotalNeighborSeparationForce () * separationParams.ForceScale;
+
+		totalForce += GetBoundingForce () * boundingParams.ForceScale;
+
+		totalForce.y = 0;
+
+		return Vector3.ClampMagnitude (totalForce, maxForce);
 	}
 
 	#endregion
@@ -28,4 +49,18 @@ public class Flocker : SmartBoundedVehicle<Flocker, FlockerCollider, FlockerSyst
 		// Grab the direction from the system here
 	}
 
+
+	/// <summary>
+	/// Draw debug line to current target
+	/// </summary>
+	protected override void OnRenderObject ()
+	{
+		glLineMaterial.SetPass (0);
+
+		GL.PushMatrix ();
+
+		base.OnRenderObject ();
+
+		GL.PopMatrix ();
+	}
 }
