@@ -20,8 +20,6 @@ public class ObstacleSystem : SpawningSystem <Obstacle>
 	{
 		var instance = Instantiate (prefab, pos, Quaternion.identity, transform);
 
-		instance.BoundingPlane = plane;
-
 		RegisterVehicle (instance);
 	}
 
