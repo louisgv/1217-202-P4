@@ -13,4 +13,7 @@ public static class Tag
 	public static string SCORE_TRACKER = "ScoreTracker";
 
 	public static string PRIME_TERRAIN = "PrimeTerrain";
+
+	public static string FLOCKER_SYSTEM = "FlockerSystem";
+
 }

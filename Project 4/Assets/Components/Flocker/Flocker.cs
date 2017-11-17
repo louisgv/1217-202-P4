@@ -30,9 +30,11 @@ public class Flocker : SmartBoundedVehicle<Flocker, FlockerCollider, FlockerSyst
 	/// <returns>The total steering force.</returns>
 	protected override Vector3 GetTotalSteeringForce ()
 	{
+		Vector3 planeCenter = TerrainHeightUtils.ApplySample (BoundingPlane.WorldCenter);
+		
 		totalForce = Vector3.zero;
 
-		totalForce += SteeringForce.GetWanderingForce (this) * wanderingParams.ForceScale;
+		totalForce += SteeringForce.GetSeekingForce (this, planeCenter) * seekingParams.ForceScale;
 
 		totalForce += GetTotalObstacleAvoidanceForce () * avoidingParams.ForceScale;
 
