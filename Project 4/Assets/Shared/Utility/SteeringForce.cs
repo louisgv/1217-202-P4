@@ -75,13 +75,13 @@ public static class SteeringForce
 	{
 		var diff = target - vehicle.transform.position;
 
-		var distance = diff.magnitude;
+		var distanceSquared = diff.sqrMagnitude;
 
 		// Arival implementation:
 		float desiredSpeed = 
-			(vehicle.seekingParams.ThresholdSquared > distance) 
+			(vehicle.seekingParams.ThresholdSquared > distanceSquared) 
 			? ProcessingMap (
-				distance, 0, 
+				distanceSquared, 0, 
 				vehicle.seekingParams.ThresholdSquared, 0, 
 				vehicle.MaxSteeringSpeed)
 			: vehicle.MaxSteeringSpeed;

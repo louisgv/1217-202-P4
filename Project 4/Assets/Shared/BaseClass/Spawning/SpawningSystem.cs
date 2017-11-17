@@ -275,9 +275,9 @@ public abstract class SpawningSystem <T>: MonoBehaviour
 			// If we found a potential target within an inner level,
 			// or none of the element closeby are within the dangerous zone
 			// then we don't have to check the outer level
-			if (targets.Count > 0 || thresholdSurpassed) {
-				break;
-			}
+//			if (targets.Count > 0 || thresholdSurpassed) {
+//				break;
+//			}
 		}
 		return targets;
 	}
