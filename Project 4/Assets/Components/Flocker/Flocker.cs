@@ -22,6 +22,12 @@ public class Flocker : SmartBoundedVehicle<Flocker, FlockerCollider, FlockerSyst
 	[SerializeField]
 	public SteeringParams cohesionParams;
 
+	/// <summary>
+	/// Gets or sets the seeking target.
+	/// </summary>
+	/// <value>The seeking target.</value>
+	public Transform SeekingTarget { get; set; }
+
 	#region implemented abstract members of Vehicle
 
 	/// <summary>
@@ -30,11 +36,9 @@ public class Flocker : SmartBoundedVehicle<Flocker, FlockerCollider, FlockerSyst
 	/// <returns>The total steering force.</returns>
 	protected override Vector3 GetTotalSteeringForce ()
 	{
-		Vector3 planeCenter = TerrainHeightUtils.ApplySample (BoundingPlane.WorldCenter);
-		
 		totalForce = Vector3.zero;
 
-		totalForce += SteeringForce.GetSeekingForce (this, planeCenter) * seekingParams.ForceScale;
+		totalForce += SteeringForce.GetSeekingForce (this, SeekingTarget.position) * seekingParams.ForceScale;
 
 		totalForce += GetTotalObstacleAvoidanceForce () * avoidingParams.ForceScale;
 

@@ -14,8 +14,6 @@ public class ObstacleCollider : CustomBoxCollider
 
 	CustomBoxCollider[] targetColliders;
 
-	Color collidingColor = Color.red;
-
 	bool isColliding;
 
 	protected override void Start ()
@@ -37,7 +35,7 @@ public class ObstacleCollider : CustomBoxCollider
 
 			if (IsCollidingWith (other)) {
 				isColliding = true;
-				Debug.Log ("IT IS COLIDING!!!!");
+//				Debug.Log ("IT IS COLIDING!!!!");
 			}
 		}
 	}

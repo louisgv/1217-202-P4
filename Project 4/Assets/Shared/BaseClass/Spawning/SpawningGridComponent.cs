@@ -31,7 +31,15 @@ public abstract class SpawningGridComponent : MonoBehaviour
 	public SpawningGridCoordinate UpdatedGrid ()
 	{
 		var localGridPos = transform.position - BoundingPlane.WorldCenter;
-		
+
+		if (GridCoordinate == null) {
+			return null;
+		}
+
+		// NOTE: This can be done better with
+		// A more thorough abstraction layer that is not 
+		// Dependent on GridCoordinate being instantiated
+		// Outside
 		var updatedGrid = new SpawningGridCoordinate (
 			                  localGridPos, GridCoordinate.GridSize,
 			                  GridCoordinate.GridResolution

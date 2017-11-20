@@ -11,44 +11,65 @@ using UnityEngine;
 /// </summary>
 public class TeleporterCollider : CustomBoxCollider
 {
-	private SpawningSystem<Vehicle> spawningSystem;
+	private Teleporter teleporterInstance;
 
-	/// <summary>
-	/// Gets or sets the spawning system.
-	/// </summary>
-	/// <value>The spawning system.</value>
-	public SpawningSystem<Vehicle> SpawningSystem {
-		get {
-			return spawningSystem;
-		}
-		set {
-			spawningSystem = value;
-		}
-	}
+	[SerializeField]
+	private FlockerSystem targetSystem;
 
+	[SerializeField]
 	private CubePlaneCollider plane;
-
-	/// <summary>
-	/// Gets or sets the plane.
-	/// </summary>
-	/// <value>The plane.</value>
-	public CubePlaneCollider Plane {
-		get {
-			return plane;
-		}
-		set {
-			plane = value;
-		}
-	}
 
 	/// <summary>
 	/// Teleport this instance to a random position on the plane.
 	/// </summary>
 	private void Teleport ()
 	{
-		var teleportingPosition = plane.GetRandomPositionAbove (this);
+		transform.position = plane.GetRandomPositionAbove (this);
 
-		transform.position = teleportingPosition;
+		var newGridCoord = teleporterInstance.UpdatedGrid ();
+
+		if (newGridCoord != null) {
+			teleporterInstance.GridCoordinate = newGridCoord;
+		}
 	}
-		
+
+	protected override void Awake ()
+	{
+		base.Awake ();
+
+		teleporterInstance = GetComponent <Teleporter> ();
+
+		teleporterInstance.BoundingPlane = plane;
+	}
+
+	protected override void Start ()
+	{
+		base.Start ();
+		Teleport ();
+
+		var localGridPos = teleporterInstance.transform.position - plane.WorldCenter;
+
+		teleporterInstance.GridCoordinate = 
+			new SpawningGridCoordinate (localGridPos, 
+			targetSystem.GridSize, 
+			targetSystem.GridResolution);
+	}
+
+	protected override void Update ()
+	{
+		base.Update ();
+
+		var nearbyTargets = targetSystem.FindCloseProximityInstances (teleporterInstance, 1);
+
+		foreach (var target in nearbyTargets) {
+			Debug.DrawLine (transform.position, target.transform.position);
+
+			var targetCollider = target.GetComponent <CustomBoxCollider> ();
+
+			if (IsCollidingWith (targetCollider)) {
+				Teleport ();
+				break;
+			}
+		}
+	}
 }

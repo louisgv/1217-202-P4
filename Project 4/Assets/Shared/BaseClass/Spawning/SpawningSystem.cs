@@ -30,6 +30,26 @@ public abstract class SpawningSystem <T>: MonoBehaviour
 	protected float gridSize;
 
 	/// <summary>
+	/// Gets the grid resolution.
+	/// </summary>
+	/// <value>The grid resolution.</value>
+	public int GridResolution {
+		get {
+			return gridResolution;
+		}
+	}
+
+	/// <summary>
+	/// Gets the size of the grid.
+	/// </summary>
+	/// <value>The size of the grid.</value>
+	public float GridSize {
+		get {
+			return gridSize;
+		}
+	}
+
+	/// <summary>
 	/// Gets the instance map.
 	/// </summary>
 	/// <value>The instance map.</value>
@@ -208,7 +228,7 @@ public abstract class SpawningSystem <T>: MonoBehaviour
 
 				foreach (var instance in instanceSet) {
 					// Skip itself
-					if (instance == inst) {
+					if (GameObject.ReferenceEquals (instance.gameObject, inst.gameObject)) {
 						continue;
 					}
 
@@ -255,7 +275,7 @@ public abstract class SpawningSystem <T>: MonoBehaviour
 
 				foreach (var instance in instanceSet) {
 					// Skip itself
-					if (instance == inst) {
+					if (GameObject.ReferenceEquals (instance.gameObject, inst.gameObject)) {
 						continue;
 					}
 
@@ -275,9 +295,9 @@ public abstract class SpawningSystem <T>: MonoBehaviour
 			// If we found a potential target within an inner level,
 			// or none of the element closeby are within the dangerous zone
 			// then we don't have to check the outer level
-//			if (targets.Count > 0 || thresholdSurpassed) {
-//				break;
-//			}
+			if (targets.Count > 0 || thresholdSurpassed) {
+				break;
+			}
 		}
 		return targets;
 	}

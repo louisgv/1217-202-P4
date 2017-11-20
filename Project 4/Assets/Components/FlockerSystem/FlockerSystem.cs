@@ -14,6 +14,9 @@ public class FlockerSystem : SpawningSystem <Flocker>
 	[SerializeField]
 	private ObstacleSystem targetObstacleSystem;
 
+	[SerializeField]
+	private Transform seekingTarget;
+
 	/// <summary>
 	/// Gets the instance map.
 	/// </summary>
@@ -43,6 +46,8 @@ public class FlockerSystem : SpawningSystem <Flocker>
 		flockerInstance.TargetObstacleSystem = targetObstacleSystem;
 
 		flockerInstance.BoundingPlane = plane;
+
+		flockerInstance.SeekingTarget = seekingTarget;
 
 		RegisterVehicle (flockerInstance);
 	}
