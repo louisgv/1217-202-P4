@@ -17,6 +17,15 @@ public class FlockerSystem : SpawningSystem <Flocker>
 	[SerializeField]
 	private Transform seekingTarget;
 
+	[SerializeField]
+	private AverageMarker averagePositionMarker;
+
+	private Vector3 averagePosition;
+
+	private Vector3 averageVelocity;
+
+	private int localFlockGroupCount;
+
 	/// <summary>
 	/// Gets the instance map.
 	/// </summary>
@@ -59,7 +68,9 @@ public class FlockerSystem : SpawningSystem <Flocker>
 	/// </summary>
 	private void RefreshFlockAverageDataMap ()
 	{
-		
+		averagePosition = Vector3.zero;
+		localFlockGroupCount = 0;
+
 		foreach (var item in InstanceMap) {
 			var instanceSet = item.Value;
 
@@ -84,12 +95,22 @@ public class FlockerSystem : SpawningSystem <Flocker>
 				velocitySum += instance.Velocity;
 			}
 
-			var avgVelocity = velocitySum / instanceSet.Count;
+			var avgVelocity = velocitySum / (float)instanceSet.Count;
 
 			FlockAverageVelocityMap [item.Key] = avgVelocity.normalized * maxSpeed;
-			FlockAveragePositionMap [item.Key] = positionSum / instanceSet.Count;
+			FlockAveragePositionMap [item.Key] = positionSum / (float)instanceSet.Count;
 
+			averageVelocity += FlockAverageVelocityMap [item.Key];
+			averagePosition += FlockAveragePositionMap [item.Key];
+			localFlockGroupCount += 1;
 		}
+
+		averagePosition /= (float)localFlockGroupCount;
+		averageVelocity /= (float)localFlockGroupCount;
+
+		averagePositionMarker.SetVelocity (averageVelocity);
+
+		averagePositionMarker.MarkerPosition = averagePosition;
 	}
 
 	protected override void Awake ()
@@ -101,6 +122,10 @@ public class FlockerSystem : SpawningSystem <Flocker>
 
 	protected override void Update ()
 	{
+		if (Input.GetKeyDown (KeyCode.D)) {
+			Vehicle.debugLine = !Vehicle.debugLine;
+		}
+
 		base.Update ();
 		RefreshFlockAverageDataMap ();
 	}

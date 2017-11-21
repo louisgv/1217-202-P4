@@ -19,6 +19,11 @@ public class TeleporterCollider : CustomBoxCollider
 	[SerializeField]
 	private CubePlaneCollider plane;
 
+	[SerializeField]
+	private float teleportTime = 10f;
+
+	private float timeout;
+
 	/// <summary>
 	/// Teleport this instance to a random position on the plane.
 	/// </summary>
@@ -67,7 +72,12 @@ public class TeleporterCollider : CustomBoxCollider
 			var targetCollider = target.GetComponent <CustomBoxCollider> ();
 
 			if (IsCollidingWith (targetCollider)) {
-				Teleport ();
+				timeout += Time.deltaTime;
+
+				if (timeout > teleportTime) {
+					timeout = 0;
+					Teleport ();
+				}
 				break;
 			}
 		}

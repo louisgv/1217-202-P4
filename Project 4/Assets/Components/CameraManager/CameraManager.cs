@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 /// <summary>
 /// Author: LAB <lab@mail.rit.edu>
@@ -11,51 +10,57 @@ using UnityEngine.SceneManagement;
 
 public class CameraManager : MonoBehaviour
 {
-	public GameObject OverallCamera;
 
-	public SmoothFollow SmoothCamera;
+	public GameObject[] cameras;
 
-	public Transform FollowingRef { get; set; }
+	private int currentCameraIndex;
 
 	/// <summary>
 	/// Initialize current index, disable all camera except the first
 	/// </summary>
 	private void Start ()
 	{
-		SetOverallCamera ();
+		currentCameraIndex = 0;
+
+		foreach (var camera in cameras) {
+			camera.SetActive (false);
+		}
+
+		if (cameras.Length > 0) {
+			cameras [0].SetActive (true);
+		}
 	}
 
 	/// <summary>
-	/// Enable only the overall camera
+	/// Cycle through the available camera in the camera array
 	/// </summary>
-	private void SetOverallCamera ()
+	/// <returns>The next camera index</returns>
+	private int GetNextCameraIndexCyclic ()
 	{
-		foreach (Transform child in transform) {
-			child.gameObject.SetActive (false);
-		}
-
-		FollowingRef = null;
-
-		OverallCamera.gameObject.SetActive (true);
+		// Cycle index using mod op
+		return (currentCameraIndex + 1) % cameras.Length;
 	}
 
 	/// <summary>
-	/// 
+	/// Disable camera at specified index
 	/// </summary>
-	public void SetSmoothCamera (Transform target)
+	/// <param name="index">camera index</param>
+	private void DisableCamera (int index)
 	{
-		if (FollowingRef == target) {
-			SetOverallCamera ();
-		}
-		FollowingRef = target;
+		cameras [index].SetActive (false);
+	}
 
-		SmoothCamera.target = target;
+	/// <summary>
+	/// Find the next camera and enable it
+	/// </summary>
+	/// <returns>The index of the camera enabled</returns>
+	private int EnableNextCamera ()
+	{
+		int nextCameraIndex = GetNextCameraIndexCyclic ();
 
-		foreach (Transform child in transform) {
-			child.gameObject.SetActive (false);
-		}
+		cameras [nextCameraIndex].SetActive (true);
 
-		SmoothCamera.gameObject.SetActive (true);
+		return nextCameraIndex;
 	}
 
 	/// <summary>
@@ -65,20 +70,21 @@ public class CameraManager : MonoBehaviour
 	{
 		bool cKeyDown = Input.GetKeyDown (KeyCode.C);
 		if (cKeyDown) {
-			SetOverallCamera ();
+			DisableCamera (currentCameraIndex);
+			currentCameraIndex = EnableNextCamera (); // Mutate currentCameraIndex
 		}
+	}
 
-		if (!FollowingRef || !FollowingRef.gameObject) {
-			SetOverallCamera ();
-		}
+	/// <summary>
+	/// Showing camera cycling instruction and the current camera name
+	/// </summary>
+	private void OnGUI ()
+	{
+		GUI.skin.box.wordWrap = true;
 
-		if (Input.GetKeyDown (KeyCode.D)) {
-			Vehicle.debugLine = !Vehicle.debugLine;
-		}
+		GUI.Box (new Rect (0, 10, 180, 54), "Current Camera:\n" + cameras [currentCameraIndex].name + ".");
 
-		if (Input.GetKeyDown (KeyCode.R)) {
-			SceneManager.LoadScene (SceneManager.GetActiveScene ().name);
-		}
+		GUI.Box (new Rect (Screen.width - 190, 10, 180, 36), "Press the 'c' key to switch camera.");
 	}
 
 }

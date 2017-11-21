@@ -78,13 +78,13 @@ public abstract class Vehicle : SpawningGridComponent
 	/// Gets the direction.
 	/// </summary>
 	/// <value>The direction.</value>
-	public Vector3 Direction { get; private set; }
+	public Vector3 Direction { get; protected set; }
 
 	/// <summary>
 	/// Gets the velocity.
 	/// </summary>
 	/// <value>The velocity.</value>
-	public Vector3 Velocity { get ; private set; }
+	public Vector3 Velocity { get ; protected set; }
 
 	/// <summary>
 	/// Gets the future position.
