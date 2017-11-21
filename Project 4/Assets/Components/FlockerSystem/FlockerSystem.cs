@@ -44,6 +44,13 @@ public class FlockerSystem : SpawningSystem <Flocker>
 		private set;
 	}
 
+	public void SpawnEntities (int count)
+	{
+		for (int i = 0; i < count; i++) {
+			SpawnEntity ();
+		}
+	}
+
 	#region implemented abstract members of SpawningSystem
 
 	public override void SpawnEntity (Vector3 pos)

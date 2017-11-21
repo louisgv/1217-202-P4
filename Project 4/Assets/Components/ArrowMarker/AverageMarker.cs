@@ -14,11 +14,6 @@ public class AverageMarker : Vehicle
 	public Material glLineMaterial;
 
 	/// <summary>
-	/// The teleport threhold squared.
-	/// </summary>
-	float teleportThreholdSquared = 144.0f;
-
-	/// <summary>
 	/// Gets or sets the marker position.
 	/// </summary>
 	/// <value>The marker position.</value>
