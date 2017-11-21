@@ -27,7 +27,7 @@ public class TeleporterCollider : CustomBoxCollider
 	/// <summary>
 	/// Teleport this instance to a random position on the plane.
 	/// </summary>
-	private void Teleport ()
+	public void Teleport ()
 	{
 		transform.position = plane.GetRandomPositionAbove (this);
 
@@ -67,10 +67,11 @@ public class TeleporterCollider : CustomBoxCollider
 		var nearbyTargets = targetSystem.FindCloseProximityInstances (teleporterInstance, 1);
 
 		foreach (var target in nearbyTargets) {
-			Debug.DrawLine (transform.position, target.transform.position);
+			// Debug.DrawLine (transform.position, target.transform.position);
 
 			var targetCollider = target.GetComponent <CustomBoxCollider> ();
 
+			// If is colliding, wait for the telport time amount, then teleport
 			if (IsCollidingWith (targetCollider)) {
 				timeout += Time.deltaTime;
 

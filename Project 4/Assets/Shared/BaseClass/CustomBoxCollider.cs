@@ -7,7 +7,7 @@ using UnityEngine;
 /// It uttilizes AABB collision algorithm to check for collision
 /// It is also used to calculate the square extend of an obstacle
 /// </summary>
-public abstract class CustomBoxCollider : MonoBehaviour
+public class CustomBoxCollider : MonoBehaviour
 {
 	[SerializeField]
 	protected Vector3 center;
@@ -110,6 +110,15 @@ public abstract class CustomBoxCollider : MonoBehaviour
 	public Vector3 GetHalfSize ()
 	{
 		return size / 2f;
+	}
+
+	/// <summary>
+	/// Gets the average 2D length, used for radius
+	/// </summary>
+	/// <returns>The largest side.</returns>
+	public float GetAverageXZLength ()
+	{
+		return (Size.x + Size.z) / 2;
 	}
 
 	#region Unity Lifecycle

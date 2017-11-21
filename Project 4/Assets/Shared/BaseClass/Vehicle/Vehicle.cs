@@ -15,7 +15,7 @@ public abstract class Vehicle : SpawningGridComponent
 	[SerializeField]
 	private float mass = 1.0f;
 
-	[SerializeField, Range (0, 10f)]
+	[SerializeField, Range (0, 20f)]
 	protected float maxForce = 5.0f;
 
 	[SerializeField, Range (0, 20f)]
@@ -24,7 +24,7 @@ public abstract class Vehicle : SpawningGridComponent
 	/// <summary>
 	/// The max fleeing velocity.
 	/// </summary>
-	[SerializeField, Range (0, 10f)]
+	[SerializeField, Range (0, 20f)]
 	protected float maxSteeringSpeed = 1;
 
 	/// <summary>
@@ -44,6 +44,16 @@ public abstract class Vehicle : SpawningGridComponent
 	public float MaxSteeringSpeedSquared {
 		get {
 			return maxSteeringSpeed * maxSteeringSpeed;
+		}
+	}
+
+	/// <summary>
+	/// Gets the max speed squared.
+	/// </summary>
+	/// <value>The max speed squared.</value>
+	public float MaxSpeedSquared {
+		get {
+			return maxSpeed * maxSpeed;
 		}
 	}
 

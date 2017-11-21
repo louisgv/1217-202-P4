@@ -11,7 +11,7 @@ using System;
 [SerializableAttribute]
 public class SteeringParams
 {
-	[SerializeField, Range (0, 50f)]
+	[SerializeField, Range (0, 100f)]
 	protected float forceScale = 2.0f;
 
 	[SerializeField]

@@ -18,9 +18,6 @@ abstract public class SmartBoundedVehicle <V, C, S>: BoundedVehicle
 	where C : CustomBoxCollider 
 	where S : SpawningSystem<V>  // Wow, dangerous teritory here
 {
-	[SerializeField]
-	public SteeringParams separationParams;
-
 	// This param includes the safe distance
 	[SerializeField]
 	public SteeringParams avoidingParams;
@@ -74,33 +71,35 @@ abstract public class SmartBoundedVehicle <V, C, S>: BoundedVehicle
 	}
 
 	/// <summary>
-	/// Gets the total neighbor separation force.
-	/// </summary>
-	/// <returns>The total neighbor separation force.</returns>
-	protected Vector3 GetTotalNeighborSeparationForce ()
-	{
-		var nearbyNeighbors = ParentSystem.FindCloseProximityInstances (this, ColliderInstance.ExtendSquared);
-
-		if (nearbyNeighbors.Count == 0) {
-			return Vector3.zero;
-		}
-
-		return SteeringForce.GetNeighborSeparationForce (this, nearbyNeighbors);
-	}
-
-	/// <summary>
 	/// Gets the total obstacle avoidance force.
 	/// </summary>
 	/// <returns>The total obstacle avoidance force.</returns>
 	protected Vector3 GetTotalObstacleAvoidanceForce ()
 	{
-		var nearbyObstacles = TargetObstacleSystem.FindCloseProximityInstances (this, avoidingParams.ThresholdSquared);
+		var mostThreateningObstacle = TargetObstacleSystem.FindNearestInstance (this, avoidingParams.ThresholdSquared, 2);
 
-		if (nearbyObstacles.Count == 0) {
+		if (mostThreateningObstacle == null) {
 			return Vector3.zero;
 		}
 
-		return SteeringForce.GetObstacleAvoidanceForce (this, ColliderInstance.Size.x, nearbyObstacles);
+		var obstacleCollider = mostThreateningObstacle.GetComponent <ObstacleCollider> ();
+
+		float radiDistance = ColliderInstance.GetAverageXZLength () + obstacleCollider.GetAverageXZLength ();
+
+		float halfFutureDistance = Velocity.sqrMagnitude / MaxSpeedSquared / 2;
+
+		var halfFutureDiff = transform.forward * halfFutureDistance;
+
+		// Front radar ahead of the vehicle
+		var frontRadar = mostThreateningObstacle.position - transform.position;
+
+		var halfFutureRadar = frontRadar - halfFutureDiff;
+
+		var futureRadar = frontRadar - halfFutureDiff;
+
+		return SteeringForce.GetAvoidanceForce (this, frontRadar, radiDistance) +
+		SteeringForce.GetAvoidanceForce (this, futureRadar, radiDistance) +
+		SteeringForce.GetAvoidanceForce (this, halfFutureRadar, radiDistance);
 	}
 
 	/// <summary>

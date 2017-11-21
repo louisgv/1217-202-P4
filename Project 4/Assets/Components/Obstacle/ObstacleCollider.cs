@@ -10,11 +10,13 @@ using UnityEngine;
 /// </summary>
 public class ObstacleCollider : CustomBoxCollider
 {
-	GameObject watchingSystemParent;
+	private GameObject watchingSystemParent;
 
-	CustomBoxCollider[] targetColliders;
+	private CustomBoxCollider[] targetColliders;
 
-	bool isColliding;
+	private bool isColliding;
+
+	public bool debugColliding;
 
 	protected override void Start ()
 	{
@@ -28,21 +30,23 @@ public class ObstacleCollider : CustomBoxCollider
 	protected override void Update ()
 	{
 		base.Update ();
-		isColliding = false;
 
-		for (int i = 0; i < targetColliders.Length; i++) {
-			var other = targetColliders [i];
+		if (debugColliding) {
+			isColliding = false;
+			for (int i = 0; i < targetColliders.Length; i++) {
+				var other = targetColliders [i];
 
-			if (IsCollidingWith (other)) {
-				isColliding = true;
-//				Debug.Log ("IT IS COLIDING!!!!");
+				if (IsCollidingWith (other)) {
+					isColliding = true;
+					Debug.Log ("IT IS COLIDING!!!!");
+				}
 			}
 		}
 	}
 
 	protected override void OnDrawGizmos ()
 	{
-		if (isColliding) {
+		if (debugColliding && isColliding) {
 			Gizmos.color = Color.red;
 			
 			Gizmos.DrawWireCube (WorldCenter, size);

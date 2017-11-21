@@ -309,9 +309,14 @@ public abstract class SpawningSystem <T>: MonoBehaviour
 	/// <param name="pos">Position.</param>
 	public Transform FindNearestInstance (
 		SpawningGridComponent inst, 
-		float minDistanceSquared = float.MaxValue
+		float minDistanceSquared = float.MaxValue,
+		int maxTracingLevel = -1
 	)
 	{
+		if (maxTracingLevel == -1) {
+			maxTracingLevel = inst.GridCoordinate.MaxTracingLevel;
+		}
+
 		if (InstanceMap == null || InstanceMap.Count == 0) {
 			return null;
 		}
@@ -319,7 +324,7 @@ public abstract class SpawningSystem <T>: MonoBehaviour
 		// Default to null
 		Transform target = null;
 
-		for (int level = 0; level <= inst.GridCoordinate.MaxTracingLevel; level++) {
+		for (int level = 0; level <= maxTracingLevel; level++) {
 			var adjacentCoords = inst.GridCoordinate.GetAdjacentGrids (level);
 
 			if (adjacentCoords == null) {

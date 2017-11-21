@@ -164,17 +164,16 @@ public static class SteeringForce
 	/// </summary>
 	/// <returns>The evasion force.</returns>
 	/// <param name="target">Target.</param>
-	internal static Vector3 GetAvoidanceForce (Vehicle vehicle, float radiDistance, Vector3 target)
+	internal static Vector3 GetAvoidanceForce (Vehicle vehicle, Vector3 diffRadar, float radiDistance)
 	{
-		var diff = target - vehicle.transform.position;
+		var forwardProjection = Vector3.Dot (diffRadar, vehicle.transform.forward);
 
-		var forwardProjection = Vector3.Dot (diff, vehicle.transform.forward);
-
+		// Object is behind, ignore
 		if (forwardProjection < 0) {
 			return Vector3.zero;
 		}
 
-		var rightProjection = Vector3.Dot (diff, vehicle.transform.right);
+		var rightProjection = Vector3.Dot (diffRadar, vehicle.transform.right);
 
 		if (rightProjection > radiDistance) {
 			return Vector3.zero;
@@ -192,25 +191,6 @@ public static class SteeringForce
 	}
 
 	/// <summary>
-	/// Gets the obstacle avoidance force.
-	/// </summary>
-	/// <returns>The obstacle avoidance force.</returns>
-	internal static Vector3 GetObstacleAvoidanceForce (Vehicle vehicle, float vehicleRadi, List<Transform> nearbyObstacles)
-	{
-		var totalForce = Vector3.zero;
-
-		foreach (var obstacle in nearbyObstacles) {
-			float obstacleRadi = obstacle.GetComponent <ObstacleCollider> ().Size.x;
-
-			float radiDistance = vehicleRadi + obstacleRadi;
-
-			totalForce += GetAvoidanceForce (vehicle, radiDistance, obstacle.position);
-		}
-
-		return totalForce;
-	}
-
-	/// <summary>
 	/// Gets the neighbor separating force.
 	/// </summary>
 	/// <returns>The obstacle evading force.</returns>
@@ -220,12 +200,14 @@ public static class SteeringForce
 
 		foreach (var neighbor in nearbyNeighbors) {
 			// TODO: Add distance factor to each of these
-			sum += (vehicle.transform.position - neighbor.transform.position).normalized;
+			var diff = vehicle.transform.position - neighbor.transform.position;
+
+			sum += diff / diff.sqrMagnitude;
 		}
 
-		var desiredVelocity = sum * vehicle.MaxSteeringSpeed / (float)nearbyNeighbors.Count;
+		var desiredVelocity = (sum / (float)nearbyNeighbors.Count).normalized * vehicle.MaxSteeringSpeed;
 
-		return SteeringForce.GetSteeringForce (vehicle, desiredVelocity);
+		return GetSteeringForce (vehicle, desiredVelocity);
 	}
 
 	/// <summary>
